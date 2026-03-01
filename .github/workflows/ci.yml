@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - 001-svg-shape-engine
+  pull_request:
+    branches:
+      - main
+      - 001-svg-shape-engine
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (TypeScript strict-mode check)
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      - name: Determinism check — replay bundle 3 consecutive runs
+        run: |
+          node --input-type=module <<'EOF'
+          import { generate } from "./src/index.ts";
+
+          const input = {
+            seed: 42,
+            canvas: { width: 500, height: 500 },
+            shapes: [
+              { type: "square", x: 100, y: 100, size: 80 },
+              { type: "circle", x: 250, y: 250, size: 60 },
+              { type: "triangle", x: 400, y: 150, size: 70 },
+              { type: "rectangle", x: 200, y: 400, width: 120, height: 50 },
+            ],
+          };
+
+          const out1 = generate(input).svg;
+          const out2 = generate(input).svg;
+          const out3 = generate(input).svg;
+
+          if (out1 !== out2 || out2 !== out3) {
+            console.error("DETERMINISM FAILURE: outputs are not identical");
+            process.exit(1);
+          }
+          console.log("Determinism check passed: all 3 runs identical");
+          EOF

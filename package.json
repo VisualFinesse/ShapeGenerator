@@ -1,0 +1,16 @@
+{
+  "name": "svg-shape-engine",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.3",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}

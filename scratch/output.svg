@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <circle id="s45-circle-0" cx="100" cy="100" r="40"/>
+  <rect id="s45-square-1" x="170" y="120" width="60" height="60"/>
+  <rect id="s45-rectangle-2" x="-10" y="225" width="120" height="50"/>
+  <polygon id="s45-triangle-3" points="300,259.585481 265,320.207259 335,320.207259" transform="rotate(45, 300, 300)"/>
+</svg>
