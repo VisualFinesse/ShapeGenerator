@@ -7,7 +7,7 @@ Each stage gets its own branch (`NNN-stage-name`) and spec file (`specs/NNN-stag
 
 ---
 
-## Stage 1 — Primitive Shapes `001-svg-shape-engine` ✅ Active
+## Stage 1 — Primitive Shapes `001-svg-shape-engine` Done
 
 **Branch**: `001-svg-shape-engine` | **Spec**: [`specs/001-svg-shape-engine/spec.md`](specs/001-svg-shape-engine/spec.md)
 
@@ -28,7 +28,7 @@ Return deterministic SVG from a seed + canvas + array of primitive shapes.
 
 ---
 
-## Stage 1.5 — Advanced Shapes `002-advanced-shapes` ⬜ Planned
+## Stage 1.5 — Advanced Shapes `002-advanced-shapes` Done
 
 **Branch**: `002-advanced-shapes` (not yet created)
 
@@ -43,8 +43,7 @@ Extend the shape engine with additional geometric primitives. All new shapes are
 
 ---
 
-## Stage 2 — Variation `003-variation` ⬜ Planned
-
+## Stage 2 — Variation `003-variation` ACTIVE
 **Branch**: `003-variation` (not yet created)
 
 Return distorted/varied shapes. Introduce controlled chaos into geometry.

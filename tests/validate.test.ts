@@ -481,3 +481,122 @@ describe("T027: Blob validation", () => {
     expect(() => validate(input)).not.toThrow();
   });
 });
+
+// ── Stage 2 variation field validation ──────────────────────────────────────
+
+describe("Stage2: distort validation", () => {
+  const base = { seed: 1, canvas: { width: 100, height: 100 } };
+
+  it("does not throw for distort: 0", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40, distort: 0 }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+
+  it("does not throw for distort: 0.5", () => {
+    const input = { ...base, shapes: [{ type: "circle", x: 50, y: 50, size: 40, distort: 0.5 }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+
+  it("does not throw for distort: 1", () => {
+    const input = { ...base, shapes: [{ type: "triangle", x: 50, y: 50, size: 40, distort: 1 }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+
+  it("throws for distort: 1.1", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40, distort: 1.1 }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/distort/);
+  });
+
+  it("throws for distort: -0.1", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40, distort: -0.1 }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/distort/);
+  });
+
+  it("throws for distort: NaN", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40, distort: NaN }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/distort/);
+  });
+
+  it("throws for distort: Infinity", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40, distort: Infinity }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/distort/);
+  });
+
+  it("does not throw when distort is absent", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40 }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+});
+
+describe("Stage2: sizeVariance validation", () => {
+  const base = { seed: 1, canvas: { width: 100, height: 100 } };
+
+  it("does not throw for sizeVariance: 0", () => {
+    const input = { ...base, shapes: [{ type: "circle", x: 50, y: 50, size: 40, sizeVariance: 0 }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+
+  it("does not throw for sizeVariance: 0.5", () => {
+    const input = { ...base, shapes: [{ type: "circle", x: 50, y: 50, size: 40, sizeVariance: 0.5 }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+
+  it("does not throw for sizeVariance: 1", () => {
+    const input = { ...base, shapes: [{ type: "oval", x: 50, y: 50, width: 60, height: 40, sizeVariance: 1 }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+
+  it("throws for sizeVariance: 1.01", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40, sizeVariance: 1.01 }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/sizeVariance/);
+  });
+
+  it("throws for sizeVariance: -0.1", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40, sizeVariance: -0.1 }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/sizeVariance/);
+  });
+
+  it("throws for sizeVariance: NaN", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40, sizeVariance: NaN }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/sizeVariance/);
+  });
+});
+
+describe("Stage2: clamp validation", () => {
+  const base = { seed: 1, canvas: { width: 100, height: 100 } };
+
+  it("does not throw for valid clamp", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40, clamp: { width: 100, height: 100 } }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+
+  it("does not throw when clamp is absent", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40 }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+
+  it("throws for clamp.width: 0", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40, clamp: { width: 0, height: 80 } }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/clamp\.width/);
+  });
+
+  it("throws for clamp.height: -1", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40, clamp: { width: 80, height: -1 } }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/clamp\.height/);
+  });
+
+  it("throws for clamp.width: Infinity", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40, clamp: { width: Infinity, height: 80 } }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/clamp\.width/);
+  });
+
+  it("throws for clamp.width: NaN", () => {
+    const input = { ...base, shapes: [{ type: "square", x: 50, y: 50, size: 40, clamp: { width: NaN, height: 80 } }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/clamp\.width/);
+  });
+
+  it("clamp without distort is accepted (valid input, no-op at runtime)", () => {
+    const input = { ...base, shapes: [{ type: "circle", x: 50, y: 50, size: 40, clamp: { width: 100, height: 100 } }] } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+});

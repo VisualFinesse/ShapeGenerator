@@ -12,26 +12,46 @@ import { renderOval } from "./shapes/oval.js";
 import { renderBlob } from "./shapes/blob.js";
 import { canonicalize } from "./canonicalize.js";
 import { validate } from "./validate.js";
+import { createPrng, varSeed } from "./prng.js";
+import { applySizeVariance, renderVaried } from "./variation.js";
 
 export function generate(input: GeneratorInput): GeneratorOutput {
   const canonical = canonicalize(input);
   validate(canonical);
   const mode = canonical.outputMode ?? "semantic";
   const elements: ShapeElement[] = canonical.shapes.map((shape, i) => {
+    const sv = shape.sizeVariance ?? 0;
+    const dt = shape.distort ?? 0;
+
+    // Create variation PRNG only when needed
+    const varPrng = (sv > 0 || dt > 0) ? createPrng(varSeed(canonical.seed, i)) : null;
+
+    // 1. Apply sizeVariance (scale size dims, consumes one prng draw)
+    const workShape = (sv > 0 && varPrng) ? applySizeVariance(shape, varPrng) : shape;
+
     let tag: ShapeElement["tag"];
     let attrs: Record<string, string | number>;
-    switch (shape.type) {
-      case "square": { const r = renderSquare(shape, mode); tag = r.tag; attrs = r.attrs; break; }
-      case "rectangle": { const r = renderRectangle(shape, mode); tag = r.tag; attrs = r.attrs; break; }
-      case "circle": { const r = renderCircle(shape, mode); tag = r.tag; attrs = r.attrs; break; }
-      case "triangle": { const r = renderTriangle(shape, mode); tag = r.tag; attrs = r.attrs; break; }
-      case "trapezoid": { const r = renderTrapezoid(shape, mode); tag = r.tag; attrs = r.attrs; break; }
-      case "octagon": { const r = renderOctagon(shape, mode); tag = r.tag; attrs = r.attrs; break; }
-      case "polygon": { const r = renderPolygon(shape, mode); tag = r.tag; attrs = r.attrs; break; }
-      case "oval": { const r = renderOval(shape, mode); tag = r.tag; attrs = r.attrs; break; }
-      case "blob": { const r = renderBlob(shape, mode, canonical.seed, i); tag = r.tag; attrs = r.attrs; break; }
-      default: throw new Error(`Unsupported shape type: ${(shape as { type: string }).type}`);
+
+    if (dt > 0 && varPrng) {
+      // 2. Apply distortion → always <path>
+      const r = renderVaried(workShape, varPrng, canonical.seed, i);
+      tag = r.tag; attrs = r.attrs;
+    } else {
+      // Normal render pipeline
+      switch (workShape.type) {
+        case "square":    { const r = renderSquare(workShape, mode);    tag = r.tag; attrs = r.attrs; break; }
+        case "rectangle": { const r = renderRectangle(workShape, mode); tag = r.tag; attrs = r.attrs; break; }
+        case "circle":    { const r = renderCircle(workShape, mode);    tag = r.tag; attrs = r.attrs; break; }
+        case "triangle":  { const r = renderTriangle(workShape, mode);  tag = r.tag; attrs = r.attrs; break; }
+        case "trapezoid": { const r = renderTrapezoid(workShape, mode); tag = r.tag; attrs = r.attrs; break; }
+        case "octagon":   { const r = renderOctagon(workShape, mode);   tag = r.tag; attrs = r.attrs; break; }
+        case "polygon":   { const r = renderPolygon(workShape, mode);   tag = r.tag; attrs = r.attrs; break; }
+        case "oval":      { const r = renderOval(workShape, mode);      tag = r.tag; attrs = r.attrs; break; }
+        case "blob":      { const r = renderBlob(workShape, mode, canonical.seed, i); tag = r.tag; attrs = r.attrs; break; }
+        default: throw new Error(`Unsupported shape type: ${(workShape as { type: string }).type}`);
+      }
     }
+
     return { tag, attrs, id: shapeId(canonical.seed, shape.type, i), rotation: shape.rotation, cx: shape.x, cy: shape.y };
   });
   return { svg: assembleSvg(canonical.canvas, elements), metadata: { shapeCount: canonical.shapes.length } };

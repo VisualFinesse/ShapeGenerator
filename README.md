@@ -24,27 +24,22 @@ Stage 3
 Shape Masks
 return a shape with a duplicate shape or alternate shape inside it.  Different size shape. Slightly distorted, not perfect, shape. Where the inner shape is a negative of the first, or a mask. The inner shape could be perfectly centered, and oriented like the first shape. Or not. Could add slight imperfections to add character.
 
-Stage 3.5
+3.5
 Opacity
 Allow shapes to have different opacity.
 
-Stage 3.6
 Color
 Allow shapes to have different colors.
 
-Stage 3.7
 Gradients.
 Allow shapes to have linear and radial gradients.
 
-Stage 4
 Bezier.
 A bezier allows us to round corners, both inside and outside.
 
 Stage 4
 Shape Merger
-Designs, almost like logos. Shapes that fit together, centerpieces. Several shapes joined to create a unique shape. Yet with consistant bezier or rounded corners. Procedural shape builder, perlin noise.
-
-SHAPE generator should be complete.
+Designs, almost like logos. Shapes that fit together, centerpieces. Several shapes joined to create a unique shape. Yet with consistant bezier or rounded corners. Procedural shape builder, perlin noise. Think Townscraper (The steam game)
 
 
 

@@ -245,3 +245,89 @@ describe("T029: canonicalize strips unknown fields from new shape types", () => 
     expect(generate(clean).svg).toBe(generate(dirty).svg);
   });
 });
+
+// ── Stage 2: variation field canonicalization ─────────────────────────────
+
+describe("Stage2 canonicalize: distort field", () => {
+  it("preserves distort when present", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "square", x: 50, y: 50, size: 40, distort: 0.2 }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    expect(result.shapes[0]).toHaveProperty("distort", 0.2);
+  });
+
+  it("omits distort key when absent", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "square", x: 50, y: 50, size: 40 }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    expect(result.shapes[0]).not.toHaveProperty("distort");
+  });
+
+  it("unknown sibling fields are still dropped even when distort is present", () => {
+    const clean = {
+      seed: 1, canvas: { width: 200, height: 200 },
+      shapes: [{ type: "circle", x: 100, y: 100, size: 50, distort: 0.1 }],
+    } as unknown as GeneratorInput;
+    const dirty = {
+      seed: 1, canvas: { width: 200, height: 200 },
+      shapes: [{ type: "circle", x: 100, y: 100, size: 50, distort: 0.1, unknownProp: "abc" }],
+    } as unknown as GeneratorInput;
+    expect(generate(clean).svg).toBe(generate(dirty).svg);
+  });
+});
+
+describe("Stage2 canonicalize: sizeVariance field", () => {
+  it("preserves sizeVariance when present", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "circle", x: 50, y: 50, size: 40, sizeVariance: 0.3 }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    expect(result.shapes[0]).toHaveProperty("sizeVariance", 0.3);
+  });
+
+  it("omits sizeVariance key when absent", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "circle", x: 50, y: 50, size: 40 }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    expect(result.shapes[0]).not.toHaveProperty("sizeVariance");
+  });
+});
+
+describe("Stage2 canonicalize: clamp field", () => {
+  it("preserves clamp object atomically when present", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "octagon", x: 50, y: 50, size: 40, clamp: { width: 80, height: 80 } }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    expect(result.shapes[0]).toHaveProperty("clamp");
+    expect((result.shapes[0] as { clamp: { width: number; height: number } }).clamp).toEqual({ width: 80, height: 80 });
+  });
+
+  it("omits clamp key when absent", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "octagon", x: 50, y: 50, size: 40 }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    expect(result.shapes[0]).not.toHaveProperty("clamp");
+  });
+
+  it("all three variation fields preserved together on trapezoid", () => {
+    const input = {
+      seed: 7, canvas: { width: 200, height: 200 },
+      shapes: [{ type: "trapezoid", x: 100, y: 100, topWidth: 40, bottomWidth: 80, height: 60, distort: 0.15, sizeVariance: 0.2, clamp: { width: 120, height: 100 } }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    expect(result.shapes[0]).toHaveProperty("distort", 0.15);
+    expect(result.shapes[0]).toHaveProperty("sizeVariance", 0.2);
+    expect(result.shapes[0]).toHaveProperty("clamp");
+  });
+});
