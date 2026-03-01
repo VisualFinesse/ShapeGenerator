@@ -1,6 +1,9 @@
 import type { GeneratorInput, Shape } from "./types.js";
 
-const SUPPORTED_TYPES = ["square", "rectangle", "circle", "triangle"] as const;
+const SUPPORTED_TYPES = [
+  "square", "rectangle", "circle", "triangle",
+  "trapezoid", "octagon", "polygon", "oval", "blob",
+] as const;
 
 function checkFinite(value: number, path: string): void {
   if (typeof value !== "number") return;
@@ -9,6 +12,13 @@ function checkFinite(value: number, path: string): void {
   }
   if (!Number.isFinite(value)) {
     throw new Error(`Invalid numeric value in ${path}: ${value}`);
+  }
+}
+
+function isPositiveFinite(value: number, path: string): void {
+  checkFinite(value, path);
+  if (value <= 0) {
+    throw new Error(`${path} must be positive, got ${value}`);
   }
 }
 
@@ -43,30 +53,21 @@ function validateShape(shape: Shape, index: number): void {
       if (shape.size === undefined || shape.size === null) {
         throw new Error(`Missing required field ${prefix}.size for square`);
       }
-      checkFinite(shape.size, `${prefix}.size`);
-      if (shape.size <= 0) {
-        throw new Error(`${prefix}.size must be positive, got ${shape.size}`);
-      }
+      isPositiveFinite(shape.size, `${prefix}.size`);
       break;
     }
     case "circle": {
       if (shape.size === undefined || shape.size === null) {
         throw new Error(`Missing required field ${prefix}.size for circle`);
       }
-      checkFinite(shape.size, `${prefix}.size`);
-      if (shape.size <= 0) {
-        throw new Error(`${prefix}.size must be positive, got ${shape.size}`);
-      }
+      isPositiveFinite(shape.size, `${prefix}.size`);
       break;
     }
     case "triangle": {
       if (shape.size === undefined || shape.size === null) {
         throw new Error(`Missing required field ${prefix}.size for triangle`);
       }
-      checkFinite(shape.size, `${prefix}.size`);
-      if (shape.size <= 0) {
-        throw new Error(`${prefix}.size must be positive, got ${shape.size}`);
-      }
+      isPositiveFinite(shape.size, `${prefix}.size`);
       break;
     }
     case "rectangle": {
@@ -76,13 +77,67 @@ function validateShape(shape: Shape, index: number): void {
       if (shape.height === undefined || shape.height === null) {
         throw new Error(`Missing required field ${prefix}.height for rectangle`);
       }
-      checkFinite(shape.width, `${prefix}.width`);
-      checkFinite(shape.height, `${prefix}.height`);
-      if (shape.width <= 0) {
-        throw new Error(`${prefix}.width must be positive, got ${shape.width}`);
+      isPositiveFinite(shape.width, `${prefix}.width`);
+      isPositiveFinite(shape.height, `${prefix}.height`);
+      break;
+    }
+    case "trapezoid": {
+      if (shape.topWidth === undefined || shape.topWidth === null) {
+        throw new Error(`Missing required field ${prefix}.topWidth for trapezoid`);
       }
-      if (shape.height <= 0) {
-        throw new Error(`${prefix}.height must be positive, got ${shape.height}`);
+      if (shape.bottomWidth === undefined || shape.bottomWidth === null) {
+        throw new Error(`Missing required field ${prefix}.bottomWidth for trapezoid`);
+      }
+      if (shape.height === undefined || shape.height === null) {
+        throw new Error(`Missing required field ${prefix}.height for trapezoid`);
+      }
+      isPositiveFinite(shape.topWidth, `${prefix}.topWidth`);
+      isPositiveFinite(shape.bottomWidth, `${prefix}.bottomWidth`);
+      isPositiveFinite(shape.height, `${prefix}.height`);
+      break;
+    }
+    case "octagon": {
+      if (shape.size === undefined || shape.size === null) {
+        throw new Error(`Missing required field ${prefix}.size for octagon`);
+      }
+      isPositiveFinite(shape.size, `${prefix}.size`);
+      break;
+    }
+    case "polygon": {
+      if (shape.sides === undefined || shape.sides === null) {
+        throw new Error(`Missing required field ${prefix}.sides for polygon`);
+      }
+      if (shape.size === undefined || shape.size === null) {
+        throw new Error(`Missing required field ${prefix}.size for polygon`);
+      }
+      checkFinite(shape.sides, `${prefix}.sides`);
+      if (!Number.isInteger(shape.sides) || shape.sides < 3) {
+        throw new Error(`${prefix}.sides must be an integer >= 3, got ${shape.sides}`);
+      }
+      isPositiveFinite(shape.size, `${prefix}.size`);
+      break;
+    }
+    case "oval": {
+      if (shape.width === undefined || shape.width === null) {
+        throw new Error(`Missing required field ${prefix}.width for oval`);
+      }
+      if (shape.height === undefined || shape.height === null) {
+        throw new Error(`Missing required field ${prefix}.height for oval`);
+      }
+      isPositiveFinite(shape.width, `${prefix}.width`);
+      isPositiveFinite(shape.height, `${prefix}.height`);
+      break;
+    }
+    case "blob": {
+      if (shape.size === undefined || shape.size === null) {
+        throw new Error(`Missing required field ${prefix}.size for blob`);
+      }
+      isPositiveFinite(shape.size, `${prefix}.size`);
+      if (shape.points !== undefined) {
+        checkFinite(shape.points, `${prefix}.points`);
+        if (!Number.isInteger(shape.points) || shape.points < 3) {
+          throw new Error(`${prefix}.points must be an integer >= 3, got ${shape.points}`);
+        }
       }
       break;
     }

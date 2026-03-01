@@ -178,3 +178,306 @@ describe("Additional validation edge cases", () => {
     expect(() => validate(input)).toThrow(/NaN/);
   });
 });
+
+// ── Stage 1.5 validation tests ─────────────────────────────────────────────
+
+describe("T023: Trapezoid validation", () => {
+  it("throws on missing topWidth", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "trapezoid", x: 50, y: 50, bottomWidth: 80, height: 40 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/topWidth/);
+  });
+
+  it("throws on missing bottomWidth", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "trapezoid", x: 50, y: 50, topWidth: 40, height: 40 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/bottomWidth/);
+  });
+
+  it("throws on missing height", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "trapezoid", x: 50, y: 50, topWidth: 40, bottomWidth: 80 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/height/);
+  });
+
+  it("throws on topWidth: 0", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "trapezoid", x: 50, y: 50, topWidth: 0, bottomWidth: 80, height: 40 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/topWidth/);
+  });
+
+  it("throws on topWidth: -5", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "trapezoid", x: 50, y: 50, topWidth: -5, bottomWidth: 80, height: 40 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/topWidth/);
+  });
+
+  it("throws on bottomWidth: NaN", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "trapezoid", x: 50, y: 50, topWidth: 40, bottomWidth: NaN, height: 40 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/bottomWidth/);
+  });
+
+  it("throws on height: Infinity", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "trapezoid", x: 50, y: 50, topWidth: 40, bottomWidth: 80, height: Infinity }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/height/);
+  });
+
+  it("does not throw for valid trapezoid", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "trapezoid", x: 50, y: 50, topWidth: 40, bottomWidth: 80, height: 40 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+});
+
+describe("T024: Octagon validation", () => {
+  it("throws on missing size", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "octagon", x: 50, y: 50 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/size/);
+  });
+
+  it("throws on size: 0", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "octagon", x: 50, y: 50, size: 0 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/size/);
+  });
+
+  it("throws on size: -1", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "octagon", x: 50, y: 50, size: -1 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/size/);
+  });
+
+  it("throws on size: NaN", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "octagon", x: 50, y: 50, size: NaN }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/size/);
+    expect(() => validate(input)).toThrow(/NaN/);
+  });
+});
+
+describe("T025: Polygon validation", () => {
+  it("throws on sides: 2 (less than 3)", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "polygon", x: 50, y: 50, sides: 2, size: 30 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/sides/);
+  });
+
+  it("throws on sides: 0", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "polygon", x: 50, y: 50, sides: 0, size: 30 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/sides/);
+  });
+
+  it("throws on sides: -1", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "polygon", x: 50, y: 50, sides: -1, size: 30 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/sides/);
+  });
+
+  it("throws on sides: 2.5 (non-integer)", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "polygon", x: 50, y: 50, sides: 2.5, size: 30 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/sides/);
+  });
+
+  it("throws on sides: NaN", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "polygon", x: 50, y: 50, sides: NaN, size: 30 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/sides/);
+  });
+
+  it("throws on missing sides", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "polygon", x: 50, y: 50, size: 30 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/sides/);
+  });
+
+  it("throws on missing size", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "polygon", x: 50, y: 50, sides: 5 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/size/);
+  });
+
+  it("throws on size: 0", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "polygon", x: 50, y: 50, sides: 5, size: 0 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/size/);
+  });
+
+  it("does not throw for valid polygon (sides=3)", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "polygon", x: 50, y: 50, sides: 3, size: 30 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+});
+
+describe("T026: Oval validation", () => {
+  it("throws on missing width", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "oval", x: 50, y: 50, height: 40 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/width/);
+  });
+
+  it("throws on missing height", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "oval", x: 50, y: 50, width: 80 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/height/);
+  });
+
+  it("throws on width: 0", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "oval", x: 50, y: 50, width: 0, height: 40 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/width/);
+  });
+
+  it("throws on height: -1", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "oval", x: 50, y: 50, width: 80, height: -1 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/height/);
+  });
+
+  it("throws on width: Infinity", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "oval", x: 50, y: 50, width: Infinity, height: 40 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/width/);
+  });
+
+  it("throws on height: NaN", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "oval", x: 50, y: 50, width: 80, height: NaN }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/height/);
+    expect(() => validate(input)).toThrow(/NaN/);
+  });
+});
+
+describe("T027: Blob validation", () => {
+  it("throws on missing size", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "blob", x: 50, y: 50 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/size/);
+  });
+
+  it("throws on size: 0", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "blob", x: 50, y: 50, size: 0 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/size/);
+  });
+
+  it("throws on size: NaN", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "blob", x: 50, y: 50, size: NaN }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/size/);
+    expect(() => validate(input)).toThrow(/NaN/);
+  });
+
+  it("throws on points: 2 (less than 3)", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "blob", x: 50, y: 50, size: 30, points: 2 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/points/);
+  });
+
+  it("throws on points: 1", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "blob", x: 50, y: 50, size: 30, points: 1 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/points/);
+  });
+
+  it("throws on points: 2.9 (non-integer)", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "blob", x: 50, y: 50, size: 30, points: 2.9 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/points/);
+  });
+
+  it("throws on points: NaN", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "blob", x: 50, y: 50, size: 30, points: NaN }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).toThrow(/points/);
+  });
+
+  it("does not throw for valid blob (no points = uses default)", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "blob", x: 50, y: 50, size: 30 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+
+  it("does not throw for points: 3 (minimum valid)", () => {
+    const input = {
+      seed: 1, canvas: { width: 100, height: 100 },
+      shapes: [{ type: "blob", x: 50, y: 50, size: 30, points: 3 }],
+    } as unknown as GeneratorInput;
+    expect(() => validate(input)).not.toThrow();
+  });
+});

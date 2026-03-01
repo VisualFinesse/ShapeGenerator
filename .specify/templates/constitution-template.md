@@ -1,4 +1,4 @@
-# SVGComponentGenerator Constitution
+# ShapeBuilder Constitution
 
 <!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
 

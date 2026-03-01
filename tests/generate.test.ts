@@ -204,3 +204,116 @@ describe("US3-AS5: canvas.width: 0 throws", () => {
     expect(() => generate(input)).toThrow(/canvas\.width/);
   });
 });
+
+// ── Stage 1.5 acceptance scenarios ────────────────────────────────────────────
+
+// US1 — all 5 new shape types
+const advancedInput: GeneratorInput = {
+  seed: 42,
+  canvas: { width: 400, height: 400 },
+  shapes: [
+    { type: "trapezoid", x: 80,  y: 80,  topWidth: 40, bottomWidth: 80, height: 50 },
+    { type: "octagon",   x: 200, y: 80,  size: 40 },
+    { type: "polygon",   x: 320, y: 80,  sides: 5, size: 35 },
+    { type: "oval",      x: 80,  y: 220, width: 80, height: 40 },
+    { type: "blob",      x: 250, y: 220, size: 50, points: 6 },
+  ],
+};
+
+describe("Stage1.5-US1-AS1: shapeCount equals number of new shapes", () => {
+  it("returns shapeCount === 5 for 5 advanced shapes", () => {
+    const output = generate(advancedInput);
+    expect(output.metadata.shapeCount).toBe(5);
+  });
+});
+
+describe("Stage1.5-US1-AS2: correct SVG element types in semantic mode", () => {
+  it("trapezoid renders as <polygon>", () => {
+    const output = generate(advancedInput);
+    expect(output.svg).toContain("<polygon ");
+  });
+
+  it("oval renders as <ellipse>", () => {
+    const output = generate(advancedInput);
+    expect(output.svg).toContain("<ellipse ");
+  });
+
+  it("blob renders as <path>", () => {
+    const output = generate(advancedInput);
+    expect(output.svg).toContain("<path ");
+  });
+});
+
+describe("Stage1.5-US1-AS3: determinism with advanced shapes", () => {
+  it("two consecutive calls with advanced shapes produce identical SVG", () => {
+    const out1 = generate(advancedInput);
+    const out2 = generate(advancedInput);
+    expect(out1.svg).toBe(out2.svg);
+  });
+});
+
+describe("Stage1.5-US1-AS4: shape IDs for new types", () => {
+  it("trapezoid ID follows s<seed>-trapezoid-<index> format", () => {
+    const output = generate(advancedInput);
+    expect(output.svg).toContain('id="s42-trapezoid-0"');
+  });
+
+  it("octagon ID follows s<seed>-octagon-<index> format", () => {
+    const output = generate(advancedInput);
+    expect(output.svg).toContain('id="s42-octagon-1"');
+  });
+
+  it("polygon ID follows s<seed>-polygon-<index> format", () => {
+    const output = generate(advancedInput);
+    expect(output.svg).toContain('id="s42-polygon-2"');
+  });
+
+  it("oval ID follows s<seed>-oval-<index> format", () => {
+    const output = generate(advancedInput);
+    expect(output.svg).toContain('id="s42-oval-3"');
+  });
+
+  it("blob ID follows s<seed>-blob-<index> format", () => {
+    const output = generate(advancedInput);
+    expect(output.svg).toContain('id="s42-blob-4"');
+  });
+});
+
+// US2 — path mode for new shapes
+describe("Stage1.5-US2: outputMode path produces only <path> elements for new shapes", () => {
+  it("all new shapes in path mode render as <path>", () => {
+    const output = generate({ ...advancedInput, outputMode: "path" });
+    expect(output.svg).not.toContain("<polygon ");
+    expect(output.svg).not.toContain("<ellipse ");
+    // All 5 elements should be paths
+    const pathMatches = output.svg.match(/<path /g);
+    expect(pathMatches).toHaveLength(5);
+  });
+
+  it("blob renders as <path> in semantic mode (always)", () => {
+    const output = generate({
+      seed: 1,
+      canvas: { width: 200, height: 200 },
+      outputMode: "semantic",
+      shapes: [{ type: "blob", x: 100, y: 100, size: 40 }],
+    });
+    expect(output.svg).toContain("<path ");
+    expect(output.svg).not.toContain("<polygon ");
+  });
+
+  it("blob renders as <path> in path mode (same as semantic)", () => {
+    const semantic = generate({
+      seed: 5,
+      canvas: { width: 200, height: 200 },
+      outputMode: "semantic",
+      shapes: [{ type: "blob", x: 100, y: 100, size: 40 }],
+    });
+    const path = generate({
+      seed: 5,
+      canvas: { width: 200, height: 200 },
+      outputMode: "path",
+      shapes: [{ type: "blob", x: 100, y: 100, size: 40 }],
+    });
+    expect(semantic.svg).toBe(path.svg);
+  });
+});
