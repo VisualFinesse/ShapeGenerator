@@ -47,6 +47,30 @@ function validateShape(shape: Shape, index: number): void {
     checkFinite(shape.rotation, `${prefix}.rotation`);
   }
 
+  // Variation field validation (optional on all shape types)
+  if (shape.distort !== undefined) {
+    checkFinite(shape.distort, `${prefix}.distort`);
+    if (shape.distort < 0 || shape.distort > 1) {
+      throw new Error(`distort must be a number between 0 and 1`);
+    }
+  }
+  if (shape.sizeVariance !== undefined) {
+    checkFinite(shape.sizeVariance, `${prefix}.sizeVariance`);
+    if (shape.sizeVariance < 0 || shape.sizeVariance > 1) {
+      throw new Error(`sizeVariance must be a number between 0 and 1`);
+    }
+  }
+  if (shape.clamp !== undefined) {
+    const w = shape.clamp.width;
+    const h = shape.clamp.height;
+    if (typeof w !== "number" || !Number.isFinite(w) || w <= 0) {
+      throw new Error(`clamp.width must be a positive finite number`);
+    }
+    if (typeof h !== "number" || !Number.isFinite(h) || h <= 0) {
+      throw new Error(`clamp.height must be a positive finite number`);
+    }
+  }
+
   // Per-type validation
   switch (shape.type) {
     case "square": {

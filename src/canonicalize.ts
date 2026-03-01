@@ -24,7 +24,10 @@ function canonicalizeShape(shape: Shape): Shape {
   const base = {
     x: shape.x,
     y: shape.y,
-    ...(shape.rotation !== undefined ? { rotation: shape.rotation } : {}),
+    ...(shape.rotation !== undefined     ? { rotation: shape.rotation } : {}),
+    ...(shape.distort !== undefined      ? { distort: shape.distort } : {}),
+    ...(shape.sizeVariance !== undefined ? { sizeVariance: shape.sizeVariance } : {}),
+    ...(shape.clamp !== undefined        ? { clamp: shape.clamp } : {}),
   };
 
   switch (shape.type) {

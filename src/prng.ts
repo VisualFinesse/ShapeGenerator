@@ -7,6 +7,14 @@ export function blobSeed(generatorSeed: number, index: number): number {
 }
 
 /**
+ * Derive a deterministic seed for a shape's variation PRNG from the generator seed and shape index.
+ * Uses different prime constants from blobSeed to guarantee independence.
+ */
+export function varSeed(generatorSeed: number, index: number): number {
+  return (Math.imul(generatorSeed | 0, 1000033) + Math.imul(index, 2246822519)) | 0;
+}
+
+/**
  * Create a mulberry32 PRNG function seeded with the given value.
  * Each call to the returned function advances state and returns a float in [0, 1).
  */

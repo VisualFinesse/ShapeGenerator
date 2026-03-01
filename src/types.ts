@@ -1,3 +1,10 @@
+// Stage 2 variation fields (optional on every shape)
+export interface VariationFields {
+  distort?: number;
+  sizeVariance?: number;
+  clamp?: { width: number; height: number };
+}
+
 // Public types
 export interface GeneratorInput {
   seed: number;
@@ -11,7 +18,7 @@ export interface Canvas {
   height: number;
 }
 
-export interface ShapeBase {
+export interface ShapeBase extends VariationFields {
   type: string;
   x: number;
   y: number;

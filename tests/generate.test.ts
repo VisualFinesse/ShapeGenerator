@@ -317,3 +317,217 @@ describe("Stage1.5-US2: outputMode path produces only <path> elements for new sh
     expect(semantic.svg).toBe(path.svg);
   });
 });
+
+// ── Stage 2 acceptance scenarios ───────────────────────────────────────────
+
+// US1 — Vertex Distortion
+describe("Stage2-US1: distort > 0 produces <path> elements", () => {
+  it("square with distort renders as <path>", () => {
+    const output = generate({
+      seed: 42,
+      canvas: { width: 400, height: 400 },
+      shapes: [{ type: "square", x: 100, y: 100, size: 80, distort: 0.1 }],
+    });
+    expect(output.svg).toContain("<path ");
+    expect(output.svg).not.toContain("<rect ");
+  });
+
+  it("circle with distort renders as <path>", () => {
+    const output = generate({
+      seed: 1,
+      canvas: { width: 200, height: 200 },
+      shapes: [{ type: "circle", x: 100, y: 100, size: 60, distort: 0.15 }],
+    });
+    expect(output.svg).toContain("<path ");
+    expect(output.svg).not.toContain("<circle ");
+  });
+
+  it("polygon with distort renders as <path>", () => {
+    const output = generate({
+      seed: 7,
+      canvas: { width: 300, height: 300 },
+      shapes: [{ type: "polygon", x: 150, y: 150, sides: 6, size: 70, distort: 0.2 }],
+    });
+    expect(output.svg).toContain("<path ");
+    expect(output.svg).not.toContain("<polygon ");
+  });
+});
+
+describe("Stage2-US1: distort determinism", () => {
+  it("two calls with same seed and distort produce identical SVG", () => {
+    const input = {
+      seed: 42,
+      canvas: { width: 400, height: 400 },
+      shapes: [
+        { type: "square" as const, x: 100, y: 100, size: 80, distort: 0.2 },
+        { type: "triangle" as const, x: 250, y: 200, size: 60, distort: 0.1 },
+      ],
+    };
+    expect(generate(input).svg).toBe(generate(input).svg);
+  });
+
+  it("different seeds with same distort produce different SVG", () => {
+    const base = { canvas: { width: 200, height: 200 }, shapes: [{ type: "octagon" as const, x: 100, y: 100, size: 50, distort: 0.15 }] };
+    const a = generate({ ...base, seed: 1 });
+    const b = generate({ ...base, seed: 2 });
+    expect(a.svg).not.toBe(b.svg);
+  });
+});
+
+describe("Stage2-US1: distort 0 is identical to unvaried output", () => {
+  it("distort: 0 produces same SVG as no distort field", () => {
+    const withZero = generate({
+      seed: 42,
+      canvas: { width: 200, height: 200 },
+      shapes: [{ type: "square" as const, x: 100, y: 100, size: 60, distort: 0 }],
+    });
+    const withNone = generate({
+      seed: 42,
+      canvas: { width: 200, height: 200 },
+      shapes: [{ type: "square" as const, x: 100, y: 100, size: 60 }],
+    });
+    expect(withZero.svg).toBe(withNone.svg);
+  });
+});
+
+describe("Stage2-US1: mixed varied and unvaried shapes", () => {
+  it("unvaried shapes still produce normal tags when mixed with distorted shapes", () => {
+    const output = generate({
+      seed: 5,
+      canvas: { width: 400, height: 400 },
+      shapes: [
+        { type: "circle" as const,    x: 100, y: 100, size: 50 },              // normal → <circle>
+        { type: "square" as const,    x: 250, y: 100, size: 60, distort: 0.1 }, // distorted → <path>
+        { type: "rectangle" as const, x: 100, y: 300, width: 80, height: 40 }, // normal → <rect>
+      ],
+    });
+    expect(output.svg).toContain("<circle ");
+    expect(output.svg).toContain("<path ");
+    expect(output.svg).toContain("<rect ");
+  });
+
+  it("shape IDs are unaffected by distort field", () => {
+    const output = generate({
+      seed: 99,
+      canvas: { width: 200, height: 200 },
+      shapes: [{ type: "square" as const, x: 100, y: 100, size: 60, distort: 0.2 }],
+    });
+    expect(output.svg).toContain('id="s99-square-0"');
+  });
+});
+
+describe("Stage2-US1: all 9 shape types support distort", () => {
+  const allTypes = [
+    { type: "square" as const,    x: 100, y: 100, size: 50, distort: 0.1 },
+    { type: "circle" as const,    x: 100, y: 100, size: 50, distort: 0.1 },
+    { type: "triangle" as const,  x: 100, y: 100, size: 50, distort: 0.1 },
+    { type: "rectangle" as const, x: 100, y: 100, width: 60, height: 40, distort: 0.1 },
+    { type: "trapezoid" as const, x: 100, y: 100, topWidth: 40, bottomWidth: 60, height: 40, distort: 0.1 },
+    { type: "octagon" as const,   x: 100, y: 100, size: 50, distort: 0.1 },
+    { type: "polygon" as const,   x: 100, y: 100, sides: 5, size: 50, distort: 0.1 },
+    { type: "oval" as const,      x: 100, y: 100, width: 60, height: 40, distort: 0.1 },
+    { type: "blob" as const,      x: 100, y: 100, size: 50, distort: 0.1 },
+  ];
+
+  for (const shape of allTypes) {
+    it(`${shape.type} with distort renders without error as <path>`, () => {
+      const output = generate({ seed: 1, canvas: { width: 300, height: 300 }, shapes: [shape] });
+      expect(output.svg).toContain("<path ");
+      expect(output.metadata.shapeCount).toBe(1);
+    });
+  }
+});
+
+// US2 — Size Variation
+describe("Stage2-US2: sizeVariance > 0 scales dimensions without forcing path", () => {
+  it("circle with sizeVariance renders as <circle>", () => {
+    const output = generate({
+      seed: 7,
+      canvas: { width: 300, height: 300 },
+      shapes: [{ type: "circle" as const, x: 150, y: 150, size: 60, sizeVariance: 0.3 }],
+    });
+    expect(output.svg).toContain("<circle ");
+    expect(output.svg).not.toContain("<path ");
+  });
+
+  it("sizeVariance: 0 produces same SVG as no sizeVariance field", () => {
+    const withZero = generate({
+      seed: 5,
+      canvas: { width: 200, height: 200 },
+      shapes: [{ type: "square" as const, x: 100, y: 100, size: 80, sizeVariance: 0 }],
+    });
+    const withNone = generate({
+      seed: 5,
+      canvas: { width: 200, height: 200 },
+      shapes: [{ type: "square" as const, x: 100, y: 100, size: 80 }],
+    });
+    expect(withZero.svg).toBe(withNone.svg);
+  });
+
+  it("sizeVariance is deterministic", () => {
+    const input = {
+      seed: 13,
+      canvas: { width: 300, height: 300 },
+      shapes: [{ type: "rectangle" as const, x: 150, y: 150, width: 80, height: 50, sizeVariance: 0.25 }],
+    };
+    expect(generate(input).svg).toBe(generate(input).svg);
+  });
+
+  it("sizeVariance changes the size dimensions compared to unvaried", () => {
+    const varied = generate({
+      seed: 42,
+      canvas: { width: 200, height: 200 },
+      shapes: [{ type: "circle" as const, x: 100, y: 100, size: 50, sizeVariance: 0.4 }],
+    });
+    const normal = generate({
+      seed: 42,
+      canvas: { width: 200, height: 200 },
+      shapes: [{ type: "circle" as const, x: 100, y: 100, size: 50 }],
+    });
+    expect(varied.svg).not.toBe(normal.svg);
+  });
+
+  it("sizeVariance + distort both apply: result is <path>", () => {
+    const output = generate({
+      seed: 3,
+      canvas: { width: 300, height: 300 },
+      shapes: [{ type: "square" as const, x: 150, y: 150, size: 70, sizeVariance: 0.2, distort: 0.1 }],
+    });
+    expect(output.svg).toContain("<path ");
+  });
+});
+
+// US3 — Vertex Clamping
+describe("Stage2-US3: clamp constrains distorted vertices", () => {
+  it("clamp with distort=0 has no effect — same as unvaried output", () => {
+    const withClamp = generate({
+      seed: 1,
+      canvas: { width: 200, height: 200 },
+      shapes: [{ type: "square" as const, x: 100, y: 100, size: 60, clamp: { width: 80, height: 80 } }],
+    });
+    const withNone = generate({
+      seed: 1,
+      canvas: { width: 200, height: 200 },
+      shapes: [{ type: "square" as const, x: 100, y: 100, size: 60 }],
+    });
+    expect(withClamp.svg).toBe(withNone.svg);
+  });
+
+  it("clamped distorted shape produces <path>", () => {
+    const output = generate({
+      seed: 7,
+      canvas: { width: 400, height: 400 },
+      shapes: [{ type: "octagon" as const, x: 200, y: 200, size: 80, distort: 0.5, clamp: { width: 120, height: 120 } }],
+    });
+    expect(output.svg).toContain("<path ");
+  });
+
+  it("clamp is deterministic", () => {
+    const input = {
+      seed: 99,
+      canvas: { width: 400, height: 400 },
+      shapes: [{ type: "polygon" as const, x: 200, y: 200, sides: 6, size: 80, distort: 0.4, clamp: { width: 100, height: 100 } }],
+    };
+    expect(generate(input).svg).toBe(generate(input).svg);
+  });
+});

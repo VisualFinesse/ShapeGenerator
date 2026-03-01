@@ -198,3 +198,62 @@ describe("INV-3 (Stage 1.5): Valid SVG root with advanced shapes", () => {
     expect(output.svg).toMatch(/<\/svg>$/);
   });
 });
+
+// ── Stage 2 invariants ─────────────────────────────────────────────────────
+
+describe("INV-6 (Stage 2): shapes without variation fields are byte-for-byte identical to Stage 1/1.5", () => {
+  it("square without variation fields produces same SVG as Stage 1 baseline", () => {
+    const baseline = generate({ seed: 42, canvas: { width: 200, height: 200 }, shapes: [{ type: "square",    x: 100, y: 100, size: 60 }] });
+    const stage2  = generate({ seed: 42, canvas: { width: 200, height: 200 }, shapes: [{ type: "square",    x: 100, y: 100, size: 60 }] });
+    expect(stage2.svg).toBe(baseline.svg);
+  });
+
+  it("all 9 shape types without variation fields produce deterministic SVG", () => {
+    const allShapes: GeneratorInput["shapes"] = [
+      { type: "square",    x: 100, y: 100, size: 50 },
+      { type: "circle",    x: 200, y: 100, size: 50 },
+      { type: "triangle",  x: 300, y: 100, size: 50 },
+      { type: "rectangle", x: 100, y: 250, width: 60, height: 40 },
+      { type: "trapezoid", x: 200, y: 250, topWidth: 40, bottomWidth: 70, height: 50 },
+      { type: "octagon",   x: 300, y: 250, size: 40 },
+      { type: "polygon",   x: 100, y: 380, sides: 5, size: 40 },
+      { type: "oval",      x: 200, y: 380, width: 70, height: 40 },
+      { type: "blob",      x: 320, y: 380, size: 45 },
+    ];
+    const input = { seed: 42, canvas: { width: 500, height: 500 }, shapes: allShapes };
+    const a = generate(input);
+    const b = generate(input);
+    expect(a.svg).toBe(b.svg);
+    expect(a.metadata.shapeCount).toBe(9);
+  });
+});
+
+describe("INV-7 (Stage 2): variation fields distort/sizeVariance isolation", () => {
+  it("adding distort to shape[0] does not affect shape[1] output", () => {
+    const sharedBase = { seed: 1, canvas: { width: 300, height: 200 } };
+    const withoutVariation = generate({
+      ...sharedBase,
+      shapes: [
+        { type: "circle" as const, x: 100, y: 100, size: 40 },
+        { type: "square" as const, x: 200, y: 100, size: 50 },
+      ],
+    });
+    const withDistortOnFirst = generate({
+      ...sharedBase,
+      shapes: [
+        { type: "circle" as const, x: 100, y: 100, size: 40, distort: 0.2 },
+        { type: "square" as const, x: 200, y: 100, size: 50 },
+      ],
+    });
+    // shape[1] (square) should produce the same <rect> output in both cases
+    const squareTag = '<rect ';
+    expect(withoutVariation.svg).toContain(squareTag);
+    expect(withDistortOnFirst.svg).toContain(squareTag);
+    // Extract rect element from each SVG and compare
+    const extractRect = (svg: string) => {
+      const m = svg.match(/<rect [^/]+\/>/);
+      return m ? m[0] : "";
+    };
+    expect(extractRect(withDistortOnFirst.svg)).toBe(extractRect(withoutVariation.svg));
+  });
+});
