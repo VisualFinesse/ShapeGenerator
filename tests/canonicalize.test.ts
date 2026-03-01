@@ -198,10 +198,10 @@ describe("T029: canonicalize strips unknown fields from new shape types", () => 
   it("drops extra field from oval", () => {
     const input = {
       seed: 1, canvas: { width: 200, height: 200 },
-      shapes: [{ type: "oval", x: 100, y: 100, width: 80, height: 40, opacity: 0.5 }],
+      shapes: [{ type: "oval", x: 100, y: 100, width: 80, height: 40, unknownField: 0.5 }],
     } as unknown as GeneratorInput;
     const result = canonicalize(input);
-    expect(result.shapes[0]).not.toHaveProperty("opacity");
+    expect(result.shapes[0]).not.toHaveProperty("unknownField");
   });
 
   it("drops extra field from blob", () => {

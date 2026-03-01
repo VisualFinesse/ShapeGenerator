@@ -19,11 +19,6 @@ Variation.
 Return a distorted shape. Add variation. Chaos. Randomness.
 Different sizes - Clamping ability.
 
-
-Stage 3
-Shape Masks
-return a shape with a duplicate shape or alternate shape inside it.  Different size shape. Slightly distorted, not perfect, shape. Where the inner shape is a negative of the first, or a mask. The inner shape could be perfectly centered, and oriented like the first shape. Or not. Could add slight imperfections to add character.
-
 3.5
 Opacity
 Allow shapes to have different opacity.
@@ -37,7 +32,13 @@ Allow shapes to have linear and radial gradients.
 Bezier.
 A bezier allows us to round corners, both inside and outside.
 
+
 Stage 4
+
+Stage 3
+Shape Masks
+return a shape with a duplicate shape or alternate shape inside it.  Different size shape. Slightly distorted, not perfect, shape. Where the inner shape is a negative of the first, or a mask. The inner shape could be perfectly centered, and oriented like the first shape. Or not. Could add slight imperfections to add character.
+
 Shape Merger
 Designs, almost like logos. Shapes that fit together, centerpieces. Several shapes joined to create a unique shape. Yet with consistant bezier or rounded corners. Procedural shape builder, perlin noise. Think Townscraper (The steam game)
 

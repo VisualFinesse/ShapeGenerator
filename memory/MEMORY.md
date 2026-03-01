@@ -14,10 +14,10 @@ Pure TypeScript SVG shape engine. Single `generate()` entry point. Zero runtime 
 |-------|--------|--------|
 | 1 — Primitives | `001-svg-shape-engine` | ✅ Done |
 | 1.5 — Advanced Shapes | `002-advanced-shapes` | ✅ Done |
-| 2 — Variation | `003-variation` | ⬜ Planned |
+| 2 — Variation | `003-variation` | ✅ Done |
 | 3 — Masks | `004-shape-masks` | ⬜ Planned |
-| 3.5–3.7 — Opacity/Color/Gradients | `005–007` | ⬜ Planned |
-| 4 — Bézier + Shape Merger | `008–009` | ⬜ Planned |
+| 3.5–3.7 — Opacity/Color/Gradients | `005–007` | ✅ Done |
+| 4 — Bézier + Shape Merger | `008–009` |✅ Done |
 
 ## Source Structure
 

@@ -22,6 +22,49 @@ function isPositiveFinite(value: number, path: string): void {
   }
 }
 
+function validateGradient(gradient: unknown, fieldName: string): void {
+  const g = gradient as { type?: unknown; stops?: unknown };
+  if (g.type !== "linear" && g.type !== "radial") {
+    throw new Error(`gradient type must be 'linear' or 'radial'`);
+  }
+  if (!Array.isArray(g.stops) || (g.stops as unknown[]).length === 0) {
+    throw new Error(`${fieldName}.stops must have at least one stop`);
+  }
+  for (const stop of g.stops as { offset?: unknown; color?: unknown; opacity?: unknown }[]) {
+    if (typeof stop.offset !== "number" || !Number.isFinite(stop.offset) || stop.offset < 0 || stop.offset > 1) {
+      throw new Error(`gradient stop offset must be a number between 0 and 1`);
+    }
+    if (typeof stop.color !== "string") {
+      throw new Error(`gradient stop color must be a string`);
+    }
+    if (stop.opacity !== undefined) {
+      if (typeof stop.opacity !== "number" || !Number.isFinite(stop.opacity) || stop.opacity < 0 || stop.opacity > 1) {
+        throw new Error(`gradient stop opacity must be a number between 0 and 1`);
+      }
+    }
+  }
+  if (g.type === "linear") {
+    const lg = g as { x1?: unknown; y1?: unknown; x2?: unknown; y2?: unknown };
+    for (const val of [lg.x1, lg.y1, lg.x2, lg.y2]) {
+      if (val !== undefined && (typeof val !== "number" || !Number.isFinite(val))) {
+        throw new Error(`gradient coordinate must be a finite number`);
+      }
+    }
+  } else {
+    const rg = g as { cx?: unknown; cy?: unknown; r?: unknown };
+    for (const val of [rg.cx, rg.cy]) {
+      if (val !== undefined && (typeof val !== "number" || !Number.isFinite(val))) {
+        throw new Error(`gradient coordinate must be a finite number`);
+      }
+    }
+    if (rg.r !== undefined) {
+      if (typeof rg.r !== "number" || !Number.isFinite(rg.r) || rg.r <= 0) {
+        throw new Error(`gradient r must be a positive finite number`);
+      }
+    }
+  }
+}
+
 function validateShape(shape: Shape, index: number): void {
   const prefix = `shapes[${index}]`;
 
@@ -46,6 +89,38 @@ function validateShape(shape: Shape, index: number): void {
   if (shape.rotation !== undefined) {
     checkFinite(shape.rotation, `${prefix}.rotation`);
   }
+
+  // Opacity validation (Stage 3)
+  if (shape.opacity !== undefined) {
+    checkFinite(shape.opacity, `${prefix}.opacity`);
+    if (shape.opacity < 0 || shape.opacity > 1) {
+      throw new Error(`opacity must be a number between 0 and 1`);
+    }
+  }
+
+  // strokeWidth validation (Stage 3)
+  if (shape.strokeWidth !== undefined) {
+    if (typeof shape.strokeWidth !== "number" || !Number.isFinite(shape.strokeWidth) || shape.strokeWidth <= 0) {
+      throw new Error(`strokeWidth must be a positive finite number`);
+    }
+  }
+
+  // bezier/bezierDirection validation (Stage 3)
+  if (shape.bezier !== undefined) {
+    checkFinite(shape.bezier, `${prefix}.bezier`);
+    if (shape.bezier < 0 || shape.bezier > 1) {
+      throw new Error(`bezier must be a number between 0 and 1`);
+    }
+  }
+  if (shape.bezierDirection !== undefined) {
+    if (shape.bezierDirection !== "out" && shape.bezierDirection !== "in") {
+      throw new Error(`bezierDirection must be "out" or "in"`);
+    }
+  }
+
+  // Gradient validation (Stage 3)
+  if (shape.fillGradient !== undefined) validateGradient(shape.fillGradient, "fillGradient");
+  if (shape.strokeGradient !== undefined) validateGradient(shape.strokeGradient, "strokeGradient");
 
   // Variation field validation (optional on all shape types)
   if (shape.distort !== undefined) {

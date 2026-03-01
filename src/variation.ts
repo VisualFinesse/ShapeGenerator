@@ -143,12 +143,66 @@ export function applyClamp(
 }
 
 // ---------------------------------------------------------------------------
-// verticesToPath — straight-line path: M x0 y0 L x1 y1 ... Z
+// verticesToPath — build path from vertices with optional bezier corner rounding.
+// When bezier = 0 or absent: straight-line path M x0 y0 L x1 y1 ... Z (unchanged).
+// When bezier > 0: quadratic bezier Q curves at each corner.
+//   Handle length: t = bezier × 0.45 (max 45% of min adjacent segment — prevents overlap).
+//   For each vertex v[i] with prev and next:
+//     P1 = v[i] + t*(prev - v[i])   (approach point on incoming edge)
+//     P2 = v[i] + t*(next - v[i])   (departure point on outgoing edge)
+//     "out" (convex): ctrl = v[i]
+//     "in"  (concave): ctrl = P1 + P2 - v[i]  (reflection through midpoint)
+//   Path: M P1[0] Q ctrl[0] P2[0] L P1[1] Q ctrl[1] P2[1] ... Z
 // ---------------------------------------------------------------------------
-export function verticesToPath(vertices: [number, number][]): string {
-  const [first, ...rest] = vertices;
-  const lines = rest.map(([vx, vy]) => `L ${fmt(vx)} ${fmt(vy)}`);
-  return `M ${fmt(first[0])} ${fmt(first[1])} ${lines.join(" ")} Z`;
+export function verticesToPath(
+  vertices: [number, number][],
+  bezier?: number,
+  direction?: "out" | "in"
+): string {
+  const N = vertices.length;
+  if (!bezier || bezier <= 0 || N < 2) {
+    const [first, ...rest] = vertices;
+    const lines = rest.map(([vx, vy]) => `L ${fmt(vx)} ${fmt(vy)}`);
+    return `M ${fmt(first[0])} ${fmt(first[1])} ${lines.join(" ")} Z`;
+  }
+
+  const t = bezier * 0.45;
+  const dir = direction ?? "out";
+  const parts: string[] = [];
+
+  for (let i = 0; i < N; i++) {
+    const [vx, vy] = vertices[i];
+    const [px, py] = vertices[(i - 1 + N) % N];
+    const [nx, ny] = vertices[(i + 1) % N];
+
+    // Approach point (t-fraction from v toward prev)
+    const p1x = vx + t * (px - vx);
+    const p1y = vy + t * (py - vy);
+
+    // Departure point (t-fraction from v toward next)
+    const p2x = vx + t * (nx - vx);
+    const p2y = vy + t * (ny - vy);
+
+    // Control point
+    let cx: number, cy: number;
+    if (dir === "out") {
+      cx = vx; cy = vy;
+    } else {
+      // Reflect v through midpoint(P1, P2)
+      cx = p1x + p2x - vx;
+      cy = p1y + p2y - vy;
+    }
+
+    if (i === 0) {
+      parts.push(`M ${fmt(p1x)} ${fmt(p1y)}`);
+    } else {
+      parts.push(`L ${fmt(p1x)} ${fmt(p1y)}`);
+    }
+    parts.push(`Q ${fmt(cx)} ${fmt(cy)} ${fmt(p2x)} ${fmt(p2y)}`);
+  }
+
+  parts.push("Z");
+  return parts.join(" ");
 }
 
 // ---------------------------------------------------------------------------
@@ -212,7 +266,9 @@ export function renderVaried(
   shape: Shape,
   varPrng: () => number,
   generatorSeed: number,
-  shapeIndex: number
+  shapeIndex: number,
+  bezier?: number,
+  bezierDirection?: "out" | "in"
 ): { tag: "path"; attrs: Record<string, string | number> } {
   const dt = shape.distort ?? 0;
   const cs = charSizeOf(shape);
@@ -224,6 +280,8 @@ export function renderVaried(
     vertices = applyClamp(vertices, shape.x, shape.y, shape.clamp.width, shape.clamp.height);
   }
 
-  const d = shape.type === "blob" ? blobVariedPath(vertices) : verticesToPath(vertices);
+  const d = shape.type === "blob"
+    ? blobVariedPath(vertices)
+    : verticesToPath(vertices, bezier, bezierDirection);
   return { tag: "path", attrs: { d } };
 }

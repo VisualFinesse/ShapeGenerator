@@ -24,10 +24,18 @@ function canonicalizeShape(shape: Shape): Shape {
   const base = {
     x: shape.x,
     y: shape.y,
-    ...(shape.rotation !== undefined     ? { rotation: shape.rotation } : {}),
-    ...(shape.distort !== undefined      ? { distort: shape.distort } : {}),
-    ...(shape.sizeVariance !== undefined ? { sizeVariance: shape.sizeVariance } : {}),
-    ...(shape.clamp !== undefined        ? { clamp: shape.clamp } : {}),
+    ...(shape.rotation !== undefined        ? { rotation: shape.rotation } : {}),
+    ...(shape.distort !== undefined         ? { distort: shape.distort } : {}),
+    ...(shape.sizeVariance !== undefined    ? { sizeVariance: shape.sizeVariance } : {}),
+    ...(shape.clamp !== undefined           ? { clamp: shape.clamp } : {}),
+    ...(shape.fill !== undefined            ? { fill: shape.fill } : {}),
+    ...(shape.stroke !== undefined          ? { stroke: shape.stroke } : {}),
+    ...(shape.strokeWidth !== undefined     ? { strokeWidth: shape.strokeWidth } : {}),
+    ...(shape.opacity !== undefined         ? { opacity: shape.opacity } : {}),
+    ...(shape.fillGradient !== undefined    ? { fillGradient: shape.fillGradient } : {}),
+    ...(shape.strokeGradient !== undefined  ? { strokeGradient: shape.strokeGradient } : {}),
+    ...(shape.bezier !== undefined          ? { bezier: shape.bezier } : {}),
+    ...(shape.bezierDirection !== undefined ? { bezierDirection: shape.bezierDirection } : {}),
   };
 
   switch (shape.type) {

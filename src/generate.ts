@@ -13,17 +13,20 @@ import { renderBlob } from "./shapes/blob.js";
 import { canonicalize } from "./canonicalize.js";
 import { validate } from "./validate.js";
 import { createPrng, varSeed } from "./prng.js";
-import { applySizeVariance, renderVaried } from "./variation.js";
+import { applySizeVariance, renderVaried, extractVertices, verticesToPath } from "./variation.js";
+import { buildGradientDef, buildStylingAttrs } from "./styling.js";
 
 export function generate(input: GeneratorInput): GeneratorOutput {
   const canonical = canonicalize(input);
   validate(canonical);
   const mode = canonical.outputMode ?? "semantic";
+  const defs: string[] = [];
   const elements: ShapeElement[] = canonical.shapes.map((shape, i) => {
     const sv = shape.sizeVariance ?? 0;
     const dt = shape.distort ?? 0;
+    const bz = shape.bezier ?? 0;
 
-    // Create variation PRNG only when needed
+    // Create variation PRNG only when needed for sizeVariance or distort
     const varPrng = (sv > 0 || dt > 0) ? createPrng(varSeed(canonical.seed, i)) : null;
 
     // 1. Apply sizeVariance (scale size dims, consumes one prng draw)
@@ -32,10 +35,18 @@ export function generate(input: GeneratorInput): GeneratorOutput {
     let tag: ShapeElement["tag"];
     let attrs: Record<string, string | number>;
 
-    if (dt > 0 && varPrng) {
-      // 2. Apply distortion → always <path>
-      const r = renderVaried(workShape, varPrng, canonical.seed, i);
-      tag = r.tag; attrs = r.attrs;
+    if (dt > 0 || bz > 0) {
+      // Path pipeline: distort and/or bezier corner rounding
+      if (dt > 0 && varPrng) {
+        // Distortion (with optional bezier rounding passed through)
+        const r = renderVaried(workShape, varPrng, canonical.seed, i, bz, workShape.bezierDirection ?? "out");
+        tag = r.tag; attrs = r.attrs;
+      } else {
+        // Bezier only — extract vertices and apply corner rounding
+        const verts = extractVertices(workShape, canonical.seed, i);
+        const d = verticesToPath(verts, bz, workShape.bezierDirection ?? "out");
+        tag = "path"; attrs = { d };
+      }
     } else {
       // Normal render pipeline
       switch (workShape.type) {
@@ -52,7 +63,25 @@ export function generate(input: GeneratorInput): GeneratorOutput {
       }
     }
 
-    return { tag, attrs, id: shapeId(canonical.seed, shape.type, i), rotation: shape.rotation, cx: shape.x, cy: shape.y };
+    // Compute shape ID (needed for gradient IDs)
+    const id = shapeId(canonical.seed, shape.type, i);
+
+    // Gradient defs accumulation
+    let fillGradId: string | undefined;
+    if (shape.fillGradient) {
+      fillGradId = `grad-${id}-fill`;
+      defs.push(buildGradientDef(fillGradId, shape.fillGradient));
+    }
+    let strokeGradId: string | undefined;
+    if (shape.strokeGradient) {
+      strokeGradId = `grad-${id}-stroke`;
+      defs.push(buildGradientDef(strokeGradId, shape.strokeGradient));
+    }
+
+    // Apply all styling attrs (fill, stroke, stroke-width, opacity)
+    Object.assign(attrs, buildStylingAttrs(shape, fillGradId, strokeGradId));
+
+    return { tag, attrs, id, rotation: shape.rotation, cx: shape.x, cy: shape.y };
   });
-  return { svg: assembleSvg(canonical.canvas, elements), metadata: { shapeCount: canonical.shapes.length } };
+  return { svg: assembleSvg(canonical.canvas, elements, defs), metadata: { shapeCount: canonical.shapes.length } };
 }
