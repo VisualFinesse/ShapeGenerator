@@ -132,3 +132,69 @@ describe("INV-7: Path-only output", () => {
     expect(output.svg).not.toContain("<polygon ");
   });
 });
+
+// ── Stage 1.5 invariants ───────────────────────────────────────────────────
+
+const advancedInput: GeneratorInput = {
+  seed: 7,
+  canvas: { width: 400, height: 400 },
+  shapes: [
+    { type: "trapezoid", x: 80,  y: 80,  topWidth: 40, bottomWidth: 80, height: 50 },
+    { type: "octagon",   x: 200, y: 80,  size: 40 },
+    { type: "polygon",   x: 320, y: 80,  sides: 5, size: 35 },
+    { type: "oval",      x: 80,  y: 220, width: 80, height: 40 },
+    { type: "blob",      x: 250, y: 220, size: 50 },
+  ],
+};
+
+describe("INV-1 (Stage 1.5): Determinism with advanced shapes", () => {
+  it("10-call loop with new shapes produces identical SVG every time", () => {
+    const first = generate(advancedInput).svg;
+    for (let i = 1; i < 10; i++) {
+      expect(generate(advancedInput).svg).toBe(first);
+    }
+  });
+});
+
+describe("INV-4 (Stage 1.5): Shape count consistency with mixed shapes", () => {
+  it("shapeCount matches shapes.length for advanced types", () => {
+    const output = generate(advancedInput);
+    expect(output.metadata.shapeCount).toBe(5);
+  });
+
+  it("element count matches shapeCount for mixed old+new shapes", () => {
+    const mixed: GeneratorInput = {
+      seed: 3,
+      canvas: { width: 400, height: 400 },
+      shapes: [
+        { type: "square",    x: 50,  y: 50,  size: 40 },
+        { type: "trapezoid", x: 150, y: 50,  topWidth: 30, bottomWidth: 60, height: 40 },
+        { type: "oval",      x: 250, y: 50,  width: 60, height: 30 },
+        { type: "blob",      x: 350, y: 50,  size: 30 },
+      ],
+    };
+    const output = generate(mixed);
+    expect(output.metadata.shapeCount).toBe(4);
+    // Count all shape element tags (including ellipse for oval)
+    const tagMatches = output.svg.match(/<(rect|circle|polygon|path|ellipse) /g);
+    expect(tagMatches).toHaveLength(4);
+  });
+});
+
+describe("INV-5 (Stage 1.5): Shape identity for new types", () => {
+  it("each new shape ID contains its type string and correct index", () => {
+    const output = generate(advancedInput);
+    const types = ["trapezoid", "octagon", "polygon", "oval", "blob"];
+    types.forEach((type, i) => {
+      expect(output.svg).toContain(`id="s7-${type}-${i}"`);
+    });
+  });
+});
+
+describe("INV-3 (Stage 1.5): Valid SVG root with advanced shapes", () => {
+  it("SVG starts with <svg xmlns and ends with </svg>", () => {
+    const output = generate(advancedInput);
+    expect(output.svg).toMatch(/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
+    expect(output.svg).toMatch(/<\/svg>$/);
+  });
+});

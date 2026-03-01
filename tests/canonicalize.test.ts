@@ -152,3 +152,96 @@ describe("US2-AS3: top-level unknown fields have zero effect", () => {
     expect(withTheme.svg).toBe(clean.svg);
   });
 });
+
+// ── Stage 1.5: unknown-field drop for new shape types ─────────────────────
+
+describe("T029: canonicalize strips unknown fields from new shape types", () => {
+  it("drops extra field from trapezoid", () => {
+    const input = {
+      seed: 1, canvas: { width: 200, height: 200 },
+      shapes: [{ type: "trapezoid", x: 100, y: 100, topWidth: 40, bottomWidth: 80, height: 50, color: "red" }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    expect(result.shapes[0]).not.toHaveProperty("color");
+  });
+
+  it("preserves all allowed trapezoid fields", () => {
+    const input = {
+      seed: 1, canvas: { width: 200, height: 200 },
+      shapes: [{ type: "trapezoid", x: 100, y: 100, topWidth: 40, bottomWidth: 80, height: 50 }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    const s = result.shapes[0] as { type: string; x: number; y: number; topWidth: number; bottomWidth: number; height: number };
+    expect(s.topWidth).toBe(40);
+    expect(s.bottomWidth).toBe(80);
+    expect(s.height).toBe(50);
+  });
+
+  it("drops extra field from octagon", () => {
+    const input = {
+      seed: 1, canvas: { width: 200, height: 200 },
+      shapes: [{ type: "octagon", x: 100, y: 100, size: 50, irrelevant: true }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    expect(result.shapes[0]).not.toHaveProperty("irrelevant");
+  });
+
+  it("drops extra field from polygon", () => {
+    const input = {
+      seed: 1, canvas: { width: 200, height: 200 },
+      shapes: [{ type: "polygon", x: 100, y: 100, sides: 5, size: 40, label: "penta" }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    expect(result.shapes[0]).not.toHaveProperty("label");
+  });
+
+  it("drops extra field from oval", () => {
+    const input = {
+      seed: 1, canvas: { width: 200, height: 200 },
+      shapes: [{ type: "oval", x: 100, y: 100, width: 80, height: 40, opacity: 0.5 }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    expect(result.shapes[0]).not.toHaveProperty("opacity");
+  });
+
+  it("drops extra field from blob", () => {
+    const input = {
+      seed: 1, canvas: { width: 200, height: 200 },
+      shapes: [{ type: "blob", x: 100, y: 100, size: 50, foo: 1, bar: "baz" }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    expect(result.shapes[0]).not.toHaveProperty("foo");
+    expect(result.shapes[0]).not.toHaveProperty("bar");
+  });
+
+  it("blob preserves optional points field when present", () => {
+    const input = {
+      seed: 1, canvas: { width: 200, height: 200 },
+      shapes: [{ type: "blob", x: 100, y: 100, size: 50, points: 8 }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    const s = result.shapes[0] as { type: string; points?: number };
+    expect(s.points).toBe(8);
+  });
+
+  it("blob omits points when not present", () => {
+    const input = {
+      seed: 1, canvas: { width: 200, height: 200 },
+      shapes: [{ type: "blob", x: 100, y: 100, size: 50 }],
+    } as unknown as GeneratorInput;
+    const result = canonicalize(input);
+    expect(result.shapes[0]).not.toHaveProperty("points");
+  });
+
+  it("unknown fields in new shapes have no effect on SVG output", () => {
+    const clean = {
+      seed: 5, canvas: { width: 200, height: 200 },
+      shapes: [{ type: "polygon", x: 100, y: 100, sides: 6, size: 40 }],
+    } as unknown as GeneratorInput;
+    const dirty = {
+      seed: 5, canvas: { width: 200, height: 200 },
+      shapes: [{ type: "polygon", x: 100, y: 100, sides: 6, size: 40, myProp: "xyz", extra: 99 }],
+    } as unknown as GeneratorInput;
+    expect(generate(clean).svg).toBe(generate(dirty).svg);
+  });
+});

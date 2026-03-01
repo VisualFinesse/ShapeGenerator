@@ -52,22 +52,18 @@ SHAPE generator should be complete.
 ____________________________
 This shape builder is a standalone piece designed to be used in our Composition Builder:
 
-### Composition Builder.
-
 The designer interfaces with the shape builder to create designs.
 
 Accent Pieces generator
 Center Pieces generator
-Background / fill pieces generator
 Patterns generator
 
-From the generators, they will return a component.
+the Designer can call any of the generators to compile a design.
 
-Using the components, we'll compile them with our
+But first, the designer will use a composition generator to create a wireframe of the composition for the design.
 
-Composition Generator
-
-Each generator will be governed by our:
+The designer will use the generators to create a design from the composition
+Each stage will be governed by our designer rulebook / laws to limit our generators from breaking fundamental design rules.
 Designer Rulebook / Laws
 
 ## Designer Rulebook - the Laws of design
@@ -84,22 +80,27 @@ Composition
 - "Symattry vs Asymattry"
 
 ## Compositions
-
 Compositions will consist of a variety of determanistic decisions. This will use components and pieces to compose the final artwork.
 The artwork will feature markdown text - for a blog. This is our "Designer" where each blog will have a unique design.
 The compositions must balance the artwork, against the written text. The artwork cannot overpower the text, the text must live inside and around the artwork. They must live in harmony - together.
-
 The compositions will determine How the text will be displayed, if a large feature/centerpiece is used and where and how. Where components go, which layout to use. This will combine all the elements we have together.
 
 
 ## Components
 Components will be the makeup of several elemnts from different parts of our creative engine.
-
 For example.
-
 A composition is a component.
 Within composition we will have more components:
 Color pallet, layout, center-piece, text, shape groups, Patterns, background, overlay
-
 Inside shape groups, each shape might be its own component, as well.
 
+## Accent Pieces generator
+Accent pieces will be called for by our Designer. Accent pieces are unique domain of graphic design. Their intent is to support the rest of the design, make it "pop" but without being a destraction. They typically are very closely related to the main design elements, with slight variation - following simliar or the same design patterns as the rest of the piece.
+These are typically small, or in clusters, and there are usually multiple accents throughout the entire design where each accent is following the same design pattern as the other accent.
+However, some are very large, but low in opacity to help blend elements together.
+
+## Center Pieces generator
+The center pieces will be much like "Logos". They are intricate, they draw your eye to them. Typically the primary color(s) of the design.
+
+## Patterns generator
+This will generate patterns - backgrounds. Overlay patterns, unique but in tiles.

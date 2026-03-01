@@ -1,4 +1,4 @@
-# SVGComponentGenerator Constitution
+# ShapeBuilder Constitution
 
 Spec Constitution · TaskFlow Constitution
 
@@ -10,18 +10,17 @@ The Shape Builder is responsible only for geometric shape generation and transfo
 
 It must not implement:
 
-* Composition logic
-* Layout rules
-* Color theory enforcement
-* Designer rulebook constraints
-* Text placement
-* Blog composition decisions
+- Composition logic
+- Layout rules
+- Color theory enforcement
+- Designer rulebook constraints
+- Text placement
+- Blog composition decisions
 
 Those concerns belong to higher-level systems (Composition Builder, Designer Rulebook).
 
 The Shape Builder produces shapes.
 It does not decide how they are used.
-
 
 ### Composability
 
@@ -29,10 +28,10 @@ All shapes must be composable.
 
 A shape must be usable:
 
-* As a standalone element
-* As part of a group
-* As a mask
-* As a component inside larger compositions
+- As a standalone element
+- As part of a group
+- As a mask
+- As a component inside larger compositions
 
 No shape implementation may assume final context or layout.
 
@@ -44,12 +43,11 @@ The system evolves in discrete stages.
 
 Each stage must:
 
-* Extend capabilities without rewriting prior foundations
-* Preserve backward compatibility unless explicitly versioned
-* Avoid premature abstraction for future stages
+- Extend capabilities without rewriting prior foundations
+- Preserve backward compatibility unless explicitly versioned
+- Avoid premature abstraction for future stages
 
 The engine must grow by layering features, not replacing core concepts.
-
 
 ### Deterministic Variation
 
@@ -79,7 +77,6 @@ Implementation details must serve domain semantics, not redefine them.
 Geometric definition of shapes must remain independent from styling attributes (color, opacity, gradients).
 
 Styling must layer on top of geometry and must not redefine shape identity.
-
 
 ### Library-First Core
 

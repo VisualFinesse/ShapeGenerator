@@ -6,6 +6,11 @@ import type {
   RectangleShape,
   CircleShape,
   TriangleShape,
+  TrapezoidShape,
+  OctagonShape,
+  PolygonShape,
+  OvalShape,
+  BlobShape,
 } from "./types.js";
 
 function canonicalizeCanvas(canvas: Canvas): Canvas {
@@ -49,6 +54,52 @@ function canonicalizeShape(shape: Shape): Shape {
         type: "triangle",
         ...base,
         size: s.size,
+      };
+      return result;
+    }
+    case "trapezoid": {
+      const s = shape as TrapezoidShape;
+      const result: TrapezoidShape = {
+        type: "trapezoid",
+        ...base,
+        topWidth: s.topWidth,
+        bottomWidth: s.bottomWidth,
+        height: s.height,
+      };
+      return result;
+    }
+    case "octagon": {
+      const s = shape as OctagonShape;
+      const result: OctagonShape = { type: "octagon", ...base, size: s.size };
+      return result;
+    }
+    case "polygon": {
+      const s = shape as PolygonShape;
+      const result: PolygonShape = {
+        type: "polygon",
+        ...base,
+        sides: s.sides,
+        size: s.size,
+      };
+      return result;
+    }
+    case "oval": {
+      const s = shape as OvalShape;
+      const result: OvalShape = {
+        type: "oval",
+        ...base,
+        width: s.width,
+        height: s.height,
+      };
+      return result;
+    }
+    case "blob": {
+      const s = shape as BlobShape;
+      const result: BlobShape = {
+        type: "blob",
+        ...base,
+        size: s.size,
+        ...(s.points !== undefined ? { points: s.points } : {}),
       };
       return result;
     }
