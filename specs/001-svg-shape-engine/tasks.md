@@ -1,6 +1,6 @@
 # Tasks: SVG Shape Engine v0.1
 
-**Branch**: `001-svg-shape-engine` | **Generated**: 2026-02-28
+**Branch**: `001-foster-ts-shapes` | **Generated**: 2026-02-28
 **Input**: plan.md · spec.md · data-model.md · contracts/api.md · research.md · quickstart.md
 
 **Tests**: Included — DoD (plan.md §7) requires `npm run test` 100% green.
@@ -19,7 +19,7 @@
 
 **Purpose**: TypeScript library project scaffold — no source logic yet.
 
-- [x] T001 Create `package.json` (`name: "svg-shape-engine"`, `type: "module"`, `exports: "./src/index.ts"`, scripts: `"build": "tsc"`, `"test": "vitest run"`, `"lint": "tsc --noEmit"`), `tsconfig.json` (strict, `ES2022`, `NodeNext`, `noEmit: false`, `outDir: "dist"`, `declaration: true`), `vitest.config.ts` — project root
+- [x] T001 Create `package.json` (`name: "foster-ts-shapes"`, `type: "module"`, `exports: "./src/index.ts"`, scripts: `"build": "tsc"`, `"test": "vitest run"`, `"lint": "tsc --noEmit"`), `tsconfig.json` (strict, `ES2022`, `NodeNext`, `noEmit: false`, `outDir: "dist"`, `declaration: true`), `vitest.config.ts` — project root
 
 **Checkpoint**: `npm run build` and `npm run test` both succeed (no source yet, no tests yet).
 
@@ -109,7 +109,7 @@
 
 - [x] T022 Verify DoD: run `npm run build` (zero TypeScript strict-mode errors) and `npm run test` (all tests green); confirm all 10 checklist items from plan.md §7, including zero runtime dependencies in `package.json` and exported API matching plan.md §1 exactly
 
-- [x] T023 Create `.github/workflows/ci.yml` — trigger on push/PR to `main` and `001-svg-shape-engine`; steps: checkout, `npm ci`, `npm run build`, `npm run test`; run the replay bundle (seed `42`, 4 shapes) 3 consecutive times in a single job step and assert all 3 outputs are byte-for-byte identical; job must pass before merge (plan.md §7 DoD item 10)
+- [x] T023 Create `.github/workflows/ci.yml` — trigger on push/PR to `main` and `001-foster-ts-shapes`; steps: checkout, `npm ci`, `npm run build`, `npm run test`; run the replay bundle (seed `42`, 4 shapes) 3 consecutive times in a single job step and assert all 3 outputs are byte-for-byte identical; job must pass before merge (plan.md §7 DoD item 10)
 
 ---
 
@@ -147,39 +147,39 @@ Complete **Phases 1–3** (T001–T014) to deliver US1: a working `generate()` o
 
 ### FR / Invariant Coverage
 
-| ID | Tasks |
-|----|-------|
-| FR-001 | T002, T010, T019 |
-| FR-002 | T002, T005–T008, T012 |
-| FR-003 | T002, T005–T008 |
-| FR-004 | T002, T005–T008, T018 |
+| ID     | Tasks                        |
+| ------ | ---------------------------- |
+| FR-001 | T002, T010, T019             |
+| FR-002 | T002, T005–T008, T012        |
+| FR-003 | T002, T005–T008              |
+| FR-004 | T002, T005–T008, T018        |
 | FR-005 | T002, T007, T008, T009, T013 |
-| FR-006 | T002, T009, T010 |
-| FR-007 | T003, T010, T013 |
+| FR-006 | T002, T009, T010             |
+| FR-007 | T003, T010, T013             |
 | FR-008 | T003, T004, T009, T013, T014 |
-| FR-009 | T009, T010, T013 |
-| FR-010 | T015, T016, T017, T021 |
-| FR-011 | T018, T019, T020, T021 |
-| FR-012 | T002, T005–T009, T014 |
-| FR-013 | T002, T013 |
-| FR-014 | T009, T013 |
-| FR-015 | T009, T013 |
-| INV-1 | T010, T014 |
-| INV-2 | T015, T016, T017 |
-| INV-3 | T009, T014 |
-| INV-4 | T009, T010, T014 |
-| INV-5 | T003, T009, T014 |
-| INV-6 | T005–T009, T014 |
-| INV-7 | T005–T009, T014 |
+| FR-009 | T009, T010, T013             |
+| FR-010 | T015, T016, T017, T021       |
+| FR-011 | T018, T019, T020, T021       |
+| FR-012 | T002, T005–T009, T014        |
+| FR-013 | T002, T013                   |
+| FR-014 | T009, T013                   |
+| FR-015 | T009, T013                   |
+| INV-1  | T010, T014                   |
+| INV-2  | T015, T016, T017             |
+| INV-3  | T009, T014                   |
+| INV-4  | T009, T010, T014             |
+| INV-5  | T003, T009, T014             |
+| INV-6  | T005–T009, T014              |
+| INV-7  | T005–T009, T014              |
 
 ### Task Count Summary
 
-| Phase | Tasks | Description |
-|-------|-------|-------------|
-| 1 Setup | 1 | T001 |
-| 2 Foundational | 3 | T002–T004 |
-| 3 US1 Generate SVG (P1) | 10 | T005–T014 |
-| 4 US2 Canonicalization (P2) | 3 | T015–T017 |
-| 5 US3 Validation (P3) | 3 | T018–T020 |
-| 6 Polish | 3 | T021–T023 |
-| **Total** | **23** | |
+| Phase                       | Tasks  | Description |
+| --------------------------- | ------ | ----------- |
+| 1 Setup                     | 1      | T001        |
+| 2 Foundational              | 3      | T002–T004   |
+| 3 US1 Generate SVG (P1)     | 10     | T005–T014   |
+| 4 US2 Canonicalization (P2) | 3      | T015–T017   |
+| 5 US3 Validation (P3)       | 3      | T018–T020   |
+| 6 Polish                    | 3      | T021–T023   |
+| **Total**                   | **23** |             |

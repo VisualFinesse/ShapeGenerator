@@ -3,7 +3,7 @@
 **Feature Branch**: `002-advanced-shapes`
 **Created**: 2026-03-01
 **Status**: Draft
-**Depends on**: `001-svg-shape-engine` ✅
+**Depends on**: `001-foster-ts-shapes` ✅
 **Input**: ROADMAP.md Stage 1.5 — Extend the shape engine with additional geometric primitives.
 
 ---
@@ -129,11 +129,18 @@ All Stage 1 invariants hold and are extended:
   "seed": 42,
   "canvas": { "width": 400, "height": 400 },
   "shapes": [
-    { "type": "trapezoid", "x": 100, "y": 80,  "topWidth": 40,  "bottomWidth": 80, "height": 50 },
-    { "type": "octagon",   "x": 200, "y": 80,  "size": 40 },
-    { "type": "polygon",   "x": 300, "y": 80,  "sides": 5, "size": 35 },
-    { "type": "oval",      "x": 100, "y": 200, "width": 80, "height": 40 },
-    { "type": "blob",      "x": 250, "y": 200, "size": 50, "points": 7 }
+    {
+      "type": "trapezoid",
+      "x": 100,
+      "y": 80,
+      "topWidth": 40,
+      "bottomWidth": 80,
+      "height": 50
+    },
+    { "type": "octagon", "x": 200, "y": 80, "size": 40 },
+    { "type": "polygon", "x": 300, "y": 80, "sides": 5, "size": 35 },
+    { "type": "oval", "x": 100, "y": 200, "width": 80, "height": 40 },
+    { "type": "blob", "x": 250, "y": 200, "size": 50, "points": 7 }
   ]
 }
 ```

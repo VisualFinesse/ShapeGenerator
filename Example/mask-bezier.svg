@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <defs>
+    <mask id="mask-s70-rectangle-0" maskUnits="userSpaceOnUse">
+    <path d="M 100 118 Q 100 100 118 100 L 182 100 Q 200 100 200 118 L 200 182 Q 200 200 182 200 L 118 200 Q 100 200 100 182 Z" fill="white"/>
+    </mask>
+  </defs>
+  <rect id="s70-rectangle-0" x="70" y="100" width="160" height="100" fill="salmon" mask="url(#mask-s70-rectangle-0)"/>
+</svg>

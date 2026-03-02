@@ -15,13 +15,20 @@ import { validate } from "./validate.js";
 import { createPrng, varSeed } from "./prng.js";
 import { applySizeVariance, renderVaried, extractVertices, verticesToPath } from "./variation.js";
 import { buildGradientDef, buildStylingAttrs } from "./styling.js";
+import { buildMaskDef } from "./mask.js";
 
 export function generate(input: GeneratorInput): GeneratorOutput {
   const canonical = canonicalize(input);
   validate(canonical);
   const mode = canonical.outputMode ?? "semantic";
   const defs: string[] = [];
-  const elements: ShapeElement[] = canonical.shapes.map((shape, i) => {
+
+  // Stage 4: stable sort by layer (lower = rendered first = further back)
+  // Capture original index before sort so shapeId / varSeed remain deterministic
+  const indexed = canonical.shapes.map((shape, i) => ({ shape, i }));
+  indexed.sort((a, b) => (a.shape.layer ?? 0) - (b.shape.layer ?? 0));
+
+  const elements: ShapeElement[] = indexed.map(({ shape, i }) => {
     const sv = shape.sizeVariance ?? 0;
     const dt = shape.distort ?? 0;
     const bz = shape.bezier ?? 0;
@@ -80,6 +87,16 @@ export function generate(input: GeneratorInput): GeneratorOutput {
 
     // Apply all styling attrs (fill, stroke, stroke-width, opacity)
     Object.assign(attrs, buildStylingAttrs(shape, fillGradId, strokeGradId));
+
+    // Stage 4: mask processing — build <mask> def and reference it on the shape
+    if (shape.mask !== undefined) {
+      const maskShapes = Array.isArray(shape.mask) ? shape.mask : [shape.mask];
+      if (maskShapes.length > 0) {
+        const maskId = `mask-${id}`;
+        defs.push(buildMaskDef(maskId, maskShapes, mode, canonical.seed, i, defs));
+        attrs["mask"] = `url(#${maskId})`;
+      }
+    }
 
     return { tag, attrs, id, rotation: shape.rotation, cx: shape.x, cy: shape.y };
   });

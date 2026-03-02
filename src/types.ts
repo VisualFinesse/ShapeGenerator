@@ -47,6 +47,20 @@ export interface BezierFields {
   bezierDirection?: "out" | "in"; // "out" = convex (default); "in" = concave
 }
 
+// Stage 4 layer field (optional on every shape)
+export interface LayerFields {
+  layer?: number;  // any finite number; default 0 for sort; lower = further back
+}
+
+// Stage 4 mask fields (optional on every shape)
+export interface MaskFields {
+  mask?: MaskShape | MaskShape[];  // one or more shapes defining the visible region
+}
+
+// MaskShape is the same union as Shape — all 9 types are valid as mask shapes
+// mask and layer fields on MaskShape are silently ignored during rendering
+export type MaskShape = Shape;
+
 // Public types
 export interface GeneratorInput {
   seed: number;
@@ -60,7 +74,7 @@ export interface Canvas {
   height: number;
 }
 
-export interface ShapeBase extends VariationFields, StylingFields, BezierFields {
+export interface ShapeBase extends VariationFields, StylingFields, BezierFields, LayerFields, MaskFields {
   type: string;
   x: number;
   y: number;

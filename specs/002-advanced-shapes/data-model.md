@@ -2,7 +2,7 @@
 
 **Branch**: `002-advanced-shapes` | **Date**: 2026-03-01
 
-> This document extends the Stage 1 data model (`specs/001-svg-shape-engine/data-model.md`). All Stage 1 entities are unchanged. Only additions and modifications are described here.
+> This document extends the Stage 1 data model (`specs/001-foster-ts-shapes/data-model.md`). All Stage 1 entities are unchanged. Only additions and modifications are described here.
 
 ---
 
@@ -14,19 +14,19 @@ The `Shape` type gains five new variants. All share the Stage 1 base fields.
 
 **Base fields** (all variants, unchanged):
 
-| Field    | Type   | Required | Constraints |
-|----------|--------|----------|-------------|
+| Field    | Type   | Required | Constraints                                                                                                |
+| -------- | ------ | -------- | ---------------------------------------------------------------------------------------------------------- |
 | type     | string | Yes      | One of: "square", "rectangle", "circle", "triangle", **"trapezoid", "octagon", "polygon", "oval", "blob"** |
-| x        | number | Yes      | Finite, not NaN (center X) |
-| y        | number | Yes      | Finite, not NaN (center Y) |
-| rotation | number | No       | Finite, not NaN (degrees, default: omitted) |
+| x        | number | Yes      | Finite, not NaN (center X)                                                                                 |
+| y        | number | Yes      | Finite, not NaN (center Y)                                                                                 |
+| rotation | number | No       | Finite, not NaN (degrees, default: omitted)                                                                |
 
 ---
 
 **TrapezoidShape** (`type: "trapezoid"`):
 
-| Field       | Type   | Required | Constraints |
-|-------------|--------|----------|-------------|
+| Field       | Type   | Required | Constraints          |
+| ----------- | ------ | -------- | -------------------- |
 | topWidth    | number | Yes      | > 0, finite, not NaN |
 | bottomWidth | number | Yes      | > 0, finite, not NaN |
 | height      | number | Yes      | > 0, finite, not NaN |
@@ -34,8 +34,9 @@ The `Shape` type gains five new variants. All share the Stage 1 base fields.
 Center convention: bounding-box midpoint (midpoint between top and bottom parallel edges).
 
 Vertices:
-- TL = (x − topWidth/2,    y − height/2)
-- TR = (x + topWidth/2,    y − height/2)
+
+- TL = (x − topWidth/2, y − height/2)
+- TR = (x + topWidth/2, y − height/2)
 - BR = (x + bottomWidth/2, y + height/2)
 - BL = (x − bottomWidth/2, y + height/2)
 
@@ -45,8 +46,8 @@ Semantic: `<polygon>` | Path: `<path>`
 
 **OctagonShape** (`type: "octagon"`):
 
-| Field | Type   | Required | Constraints |
-|-------|--------|----------|-------------|
+| Field | Type   | Required | Constraints                         |
+| ----- | ------ | -------- | ----------------------------------- |
 | size  | number | Yes      | > 0, finite, not NaN (circumradius) |
 
 8 vertices at angles `k·π/4 − π/2` for k = 0..7 (first vertex at top).
@@ -57,9 +58,9 @@ Semantic: `<polygon>` | Path: `<path>`
 
 **PolygonShape** (`type: "polygon"`):
 
-| Field | Type   | Required | Constraints |
-|-------|--------|----------|-------------|
-| sides | number | Yes      | Integer ≥ 3, finite, not NaN |
+| Field | Type   | Required | Constraints                         |
+| ----- | ------ | -------- | ----------------------------------- |
+| sides | number | Yes      | Integer ≥ 3, finite, not NaN        |
 | size  | number | Yes      | > 0, finite, not NaN (circumradius) |
 
 `n` vertices at angles `2π·k/n − π/2` for k = 0..n−1 (first vertex at top).
@@ -70,10 +71,10 @@ Semantic: `<polygon>` | Path: `<path>`
 
 **OvalShape** (`type: "oval"`):
 
-| Field  | Type   | Required | Constraints |
-|--------|--------|----------|-------------|
+| Field  | Type   | Required | Constraints                                   |
+| ------ | ------ | -------- | --------------------------------------------- |
 | width  | number | Yes      | > 0, finite, not NaN (full horizontal extent) |
-| height | number | Yes      | > 0, finite, not NaN (full vertical extent) |
+| height | number | Yes      | > 0, finite, not NaN (full vertical extent)   |
 
 Semi-axes: `rx = width/2`, `ry = height/2`.
 
@@ -83,12 +84,13 @@ Semantic: `<ellipse cx="x" cy="y" rx="rx" ry="ry">` | Path: two-arc `<path>` (sp
 
 **BlobShape** (`type: "blob"`):
 
-| Field  | Type   | Required | Constraints |
-|--------|--------|----------|-------------|
+| Field  | Type   | Required | Constraints                                    |
+| ------ | ------ | -------- | ---------------------------------------------- |
 | size   | number | Yes      | > 0, finite, not NaN (nominal bounding radius) |
-| points | number | No       | Integer ≥ 3, default 6 |
+| points | number | No       | Integer ≥ 3, default 6                         |
 
 Generation procedure:
+
 1. Derive PRNG seed: `Math.imul(generatorSeed | 0, 1000003) + shapeIndex * 2654435761`
 2. mulberry32 PRNG from derived seed
 3. Place `n = points` control points at evenly-spaced angles `2π·k/n`
@@ -146,17 +148,17 @@ generate(GeneratorInput) → GeneratorOutput
 
 Additional rules on top of Stage 1:
 
-| # | Rule |
-|---|------|
-| V-10 | `trapezoid.topWidth`: required, > 0, finite |
-| V-11 | `trapezoid.bottomWidth`: required, > 0, finite |
-| V-12 | `trapezoid.height`: required, > 0, finite |
-| V-13 | `octagon.size`: required, > 0, finite |
-| V-14 | `polygon.sides`: required, integer ≥ 3, finite |
-| V-15 | `polygon.size`: required, > 0, finite |
-| V-16 | `oval.width`: required, > 0, finite |
-| V-17 | `oval.height`: required, > 0, finite |
-| V-18 | `blob.size`: required, > 0, finite |
+| #    | Rule                                             |
+| ---- | ------------------------------------------------ |
+| V-10 | `trapezoid.topWidth`: required, > 0, finite      |
+| V-11 | `trapezoid.bottomWidth`: required, > 0, finite   |
+| V-12 | `trapezoid.height`: required, > 0, finite        |
+| V-13 | `octagon.size`: required, > 0, finite            |
+| V-14 | `polygon.sides`: required, integer ≥ 3, finite   |
+| V-15 | `polygon.size`: required, > 0, finite            |
+| V-16 | `oval.width`: required, > 0, finite              |
+| V-17 | `oval.height`: required, > 0, finite             |
+| V-18 | `blob.size`: required, > 0, finite               |
 | V-19 | `blob.points` (if provided): integer ≥ 3, finite |
 
 ---
@@ -165,10 +167,10 @@ Additional rules on top of Stage 1:
 
 New shape variants and their allowed fields (all others silently dropped):
 
-| Type       | Allowed fields |
-|------------|----------------|
-| trapezoid  | type, x, y, rotation, topWidth, bottomWidth, height |
-| octagon    | type, x, y, rotation, size |
-| polygon    | type, x, y, rotation, sides, size |
-| oval       | type, x, y, rotation, width, height |
-| blob       | type, x, y, rotation, size, points |
+| Type      | Allowed fields                                      |
+| --------- | --------------------------------------------------- |
+| trapezoid | type, x, y, rotation, topWidth, bottomWidth, height |
+| octagon   | type, x, y, rotation, size                          |
+| polygon   | type, x, y, rotation, sides, size                   |
+| oval      | type, x, y, rotation, width, height                 |
+| blob      | type, x, y, rotation, size, points                  |

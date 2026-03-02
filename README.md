@@ -1,102 +1,211 @@
-# Shape Builder
+# foster-ts-shapes
 
-This project allow me to create shapes. With full control, and build off of the shape generator to create more complex designs downstream. These shapes need to be Vectors. SVGs. SVGs are code-based shapes (not raster images) and perform much better, as far as the size of the file is concerned. While never losing quality, or sharpness. They can be scaled infinitely.
+> Deterministic SVG shape generation — zero dependencies, fully typed, endlessly composable.
 
-Taking this project and building on a strong foundation. Small steps. Here is the current roadmap.
+Built by a developer who understands that the best infrastructure is the kind you never have to think about twice. `foster-ts-shapes` is a precision-engineered primitive: drop in a seed and a shape list, get back a pixel-perfect SVG every time. No canvas, no DOM, no runtime deps — just TypeScript and math.
 
+---
 
+## Install
 
-Stage 1
-Return primitive shapes
-Circle, Square, Triangle, Rectangle.
+```bash
+npm install foster-ts-shapes
+```
 
-Stage 1.5
-Advanced shapes
-Trapazoid, Octogon, polygon, Oval, Freeform Blob.
+---
 
-Stage 2.
-Variation.
-Return a distorted shape. Add variation. Chaos. Randomness.
-Different sizes - Clamping ability.
+## Quick Start
 
-3.5
-Opacity
-Allow shapes to have different opacity.
+```ts
+import { generate } from "foster-ts-shapes";
 
-Color
-Allow shapes to have different colors.
+const result = generate({
+  seed: 42,
+  canvas: { width: 400, height: 400 },
+  shapes: [
+    { type: "circle", x: 200, y: 200, size: 100, fill: "steelblue" },
+  ],
+});
 
-Gradients.
-Allow shapes to have linear and radial gradients.
+console.log(result.svg); // <svg ...>...</svg>
+```
 
-Bezier.
-A bezier allows us to round corners, both inside and outside.
+Same seed → same SVG. Every time. On any machine.
 
+---
 
-Stage 4
+## Shapes
 
-Stage 3
-Shape Masks
-return a shape with a duplicate shape or alternate shape inside it.  Different size shape. Slightly distorted, not perfect, shape. Where the inner shape is a negative of the first, or a mask. The inner shape could be perfectly centered, and oriented like the first shape. Or not. Could add slight imperfections to add character.
+Nine shape types, all sharing a common base interface:
 
-Shape Merger
-Designs, almost like logos. Shapes that fit together, centerpieces. Several shapes joined to create a unique shape. Yet with consistant bezier or rounded corners. Procedural shape builder, perlin noise. Think Townscraper (The steam game)
+| Type | Required fields |
+|------|----------------|
+| `square` | `x, y, size` |
+| `rectangle` | `x, y, width, height` |
+| `circle` | `x, y, size` |
+| `triangle` | `x, y, size` |
+| `trapezoid` | `x, y, topWidth, bottomWidth, height` |
+| `octagon` | `x, y, size` |
+| `polygon` | `x, y, sides, size` |
+| `oval` | `x, y, width, height` |
+| `blob` | `x, y, size, points?` |
 
+Every shape also accepts `rotation?` (degrees).
 
+---
 
+## Features
 
-____________________________
-This shape builder is a standalone piece designed to be used in our Composition Builder:
+### Styling
 
-The designer interfaces with the shape builder to create designs.
+Every shape accepts fill, stroke, and opacity fields:
 
-Accent Pieces generator
-Center Pieces generator
-Patterns generator
+```ts
+{
+  type: "square",
+  x: 100, y: 100, size: 80,
+  fill: "tomato",
+  stroke: "darkred",
+  strokeWidth: 3,
+  opacity: 0.85,
+}
+```
 
-the Designer can call any of the generators to compile a design.
+### Gradients
 
-But first, the designer will use a composition generator to create a wireframe of the composition for the design.
+Linear and radial gradients on fill and/or stroke:
 
-The designer will use the generators to create a design from the composition
-Each stage will be governed by our designer rulebook / laws to limit our generators from breaking fundamental design rules.
-Designer Rulebook / Laws
+```ts
+{
+  type: "circle",
+  x: 150, y: 150, size: 100,
+  fillGradient: {
+    type: "linear",
+    x1: 0, y1: 0, x2: 1, y2: 1,
+    stops: [
+      { offset: 0, color: "royalblue" },
+      { offset: 1, color: "mediumpurple" },
+    ],
+  },
+}
+```
 
-## Designer Rulebook - the Laws of design
-These are rules the designer cannot break.
-Some common examples revolve around color theory.
-Line Theory
-Shape Theory
-Composition
+### Bezier Rounding
 
-- "Limited Colors, or a color pallette"
-- "Limitations around multiple shape types"
-- "Golden Ratio"
-- "Rule of thirds"
-- "Symattry vs Asymattry"
+Smooth out any shape's corners with a single field:
 
-## Compositions
-Compositions will consist of a variety of determanistic decisions. This will use components and pieces to compose the final artwork.
-The artwork will feature markdown text - for a blog. This is our "Designer" where each blog will have a unique design.
-The compositions must balance the artwork, against the written text. The artwork cannot overpower the text, the text must live inside and around the artwork. They must live in harmony - together.
-The compositions will determine How the text will be displayed, if a large feature/centerpiece is used and where and how. Where components go, which layout to use. This will combine all the elements we have together.
+```ts
+{
+  type: "polygon",
+  x: 200, y: 200, sides: 6, size: 100,
+  bezier: 0.4,             // 0–1: rounding amount
+  bezierDirection: "in",   // "out" (convex, default) | "in" (concave)
+}
+```
 
+### Variation / Distortion
 
-## Components
-Components will be the makeup of several elemnts from different parts of our creative engine.
-For example.
-A composition is a component.
-Within composition we will have more components:
-Color pallet, layout, center-piece, text, shape groups, Patterns, background, overlay
-Inside shape groups, each shape might be its own component, as well.
+Seeded randomness that distorts vertices — great for organic, hand-drawn aesthetics:
 
-## Accent Pieces generator
-Accent pieces will be called for by our Designer. Accent pieces are unique domain of graphic design. Their intent is to support the rest of the design, make it "pop" but without being a destraction. They typically are very closely related to the main design elements, with slight variation - following simliar or the same design patterns as the rest of the piece.
-These are typically small, or in clusters, and there are usually multiple accents throughout the entire design where each accent is following the same design pattern as the other accent.
-However, some are very large, but low in opacity to help blend elements together.
+```ts
+{
+  type: "blob",
+  x: 150, y: 150, size: 100, points: 8,
+  fill: "goldenrod",
+  distort: 0.3,          // 0–1: per-vertex displacement
+  sizeVariance: 0.2,     // 0–1: overall scale jitter
+  clamp: { width: 200, height: 200 }, // keep shape within bounds
+}
+```
 
-## Center Pieces generator
-The center pieces will be much like "Logos". They are intricate, they draw your eye to them. Typically the primary color(s) of the design.
+### Layers
 
-## Patterns generator
-This will generate patterns - backgrounds. Overlay patterns, unique but in tiles.
+Control z-order with `layer` — lower values render behind higher ones:
+
+```ts
+shapes: [
+  { type: "circle",    x: 200, y: 200, size: 150, fill: "cornflowerblue", layer: 0 },
+  { type: "oval",      x: 200, y: 200, width: 80, height: 40, fill: "white", layer: 1 },
+]
+```
+
+### Masks
+
+Clip any shape using one or more mask shapes. Masks accept the full variation and bezier API:
+
+```ts
+// Circle clipped to a triangle window
+{
+  type: "circle",
+  x: 150, y: 150, size: 100,
+  fill: "steelblue",
+  mask: { type: "triangle", x: 150, y: 150, size: 90 },
+}
+
+// Polygon revealed through two circular windows
+{
+  type: "polygon",
+  x: 200, y: 150, sides: 8, size: 130,
+  fill: "mediumseagreen",
+  mask: [
+    { type: "circle", x: 140, y: 130, size: 60 },
+    { type: "circle", x: 260, y: 170, size: 60 },
+  ],
+}
+
+// Donut: punch a hole in a shape by compositing black into the mask
+{
+  type: "square",
+  x: 150, y: 150, size: 160,
+  fill: "steelblue",
+  mask: [
+    { type: "square", x: 150, y: 150, size: 160, fill: "white" }, // reveal
+    { type: "square", x: 150, y: 150, size: 80,  fill: "black" }, // punch hole
+  ],
+}
+```
+
+---
+
+## API
+
+### `generate(input: GeneratorInput): GeneratorOutput`
+
+```ts
+interface GeneratorInput {
+  seed: number;               // any integer — determines all randomness
+  canvas: { width: number; height: number };
+  shapes: Shape[];
+  outputMode?: "semantic" | "path"; // default: "semantic"
+}
+
+interface GeneratorOutput {
+  svg: string;
+  metadata: { shapeCount: number };
+}
+```
+
+`outputMode: "semantic"` emits native SVG primitives (`<rect>`, `<circle>`, etc.) where possible.
+`outputMode: "path"` forces all shapes to `<path>` elements — useful when distortion or masking is applied.
+
+---
+
+## Determinism
+
+The seed drives a [mulberry32](https://gist.github.com/tommyettinger/46a874533244883189143505d203312c) PRNG. Given the same seed and input, `generate()` returns byte-for-byte identical SVG output across environments and versions. This makes the library suitable as a stable foundation for generative art pipelines, procedural asset systems, or any context where reproducibility matters.
+
+---
+
+## TypeScript
+
+Full strict-mode types are included. No `@types/` package needed.
+
+```ts
+import type { GeneratorInput, Shape, GeneratorOutput } from "foster-ts-shapes";
+```
+
+---
+
+## License
+
+MIT © 2026 VisualFinesse

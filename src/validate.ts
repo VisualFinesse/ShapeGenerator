@@ -122,6 +122,20 @@ function validateShape(shape: Shape, index: number): void {
   if (shape.fillGradient !== undefined) validateGradient(shape.fillGradient, "fillGradient");
   if (shape.strokeGradient !== undefined) validateGradient(shape.strokeGradient, "strokeGradient");
 
+  // Layer validation (Stage 4)
+  if (shape.layer !== undefined && !Number.isFinite(shape.layer)) {
+    throw new Error(`layer must be a finite number`);
+  }
+
+  // Mask validation (Stage 4) — each MaskShape is validated as a full shape
+  // mask/layer on the MaskShapes are not present after canonicalize, so no special handling needed
+  if (shape.mask !== undefined) {
+    const maskArr = Array.isArray(shape.mask) ? shape.mask : [shape.mask];
+    for (let mi = 0; mi < maskArr.length; mi++) {
+      validateShape(maskArr[mi], index);
+    }
+  }
+
   // Variation field validation (optional on all shape types)
   if (shape.distort !== undefined) {
     checkFinite(shape.distort, `${prefix}.distort`);

@@ -2,7 +2,7 @@
 
 **Branch**: `003-variation`
 **Stage**: 2
-**Depends on**: Stage 1 (`001-svg-shape-engine`), Stage 1.5 (`002-advanced-shapes`)
+**Depends on**: Stage 1 (`001-foster-ts-shapes`), Stage 1.5 (`002-advanced-shapes`)
 
 ---
 
@@ -45,11 +45,11 @@ Three optional fields are added to every shape: `distort`, `sizeVariance`, and `
 
 **Affected size dimensions per type**:
 
-| Shape type | Scaled dimensions |
-|---|---|
-| `square`, `circle`, `triangle`, `octagon`, `polygon`, `blob` | `size` |
-| `rectangle`, `oval` | `width`, `height` |
-| `trapezoid` | `topWidth`, `bottomWidth`, `height` |
+| Shape type                                                   | Scaled dimensions                   |
+| ------------------------------------------------------------ | ----------------------------------- |
+| `square`, `circle`, `triangle`, `octagon`, `polygon`, `blob` | `size`                              |
+| `rectangle`, `oval`                                          | `width`, `height`                   |
+| `trapezoid`                                                  | `topWidth`, `bottomWidth`, `height` |
 
 ### US3 — Vertex Clamping (P3)
 
@@ -68,16 +68,16 @@ Three optional fields are added to every shape: `distort`, `sizeVariance`, and `
 
 ### charSize (distortion magnitude basis)
 
-| Shape type | `charSize` |
-|---|---|
-| `square` | `size / 2` |
-| `circle` | `size / 2` |
-| `triangle` | `size / 2` |
-| `octagon` | `size / 2` |
-| `polygon` | `size / 2` |
-| `blob` | `size / 2` |
-| `rectangle` | `Math.min(width, height) / 2` |
-| `oval` | `Math.min(width, height) / 2` |
+| Shape type  | `charSize`                                    |
+| ----------- | --------------------------------------------- |
+| `square`    | `size / 2`                                    |
+| `circle`    | `size / 2`                                    |
+| `triangle`  | `size / 2`                                    |
+| `octagon`   | `size / 2`                                    |
+| `polygon`   | `size / 2`                                    |
+| `blob`      | `size / 2`                                    |
+| `rectangle` | `Math.min(width, height) / 2`                 |
+| `oval`      | `Math.min(width, height) / 2`                 |
 | `trapezoid` | `Math.min(topWidth, bottomWidth, height) / 2` |
 
 ### Circle / Oval vertex sampling (when `distort > 0`)

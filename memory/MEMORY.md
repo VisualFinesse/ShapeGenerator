@@ -10,14 +10,14 @@ Pure TypeScript SVG shape engine. Single `generate()` entry point. Zero runtime 
 
 ## Stage Status
 
-| Stage | Branch | Status |
-|-------|--------|--------|
-| 1 — Primitives | `001-svg-shape-engine` | ✅ Done |
-| 1.5 — Advanced Shapes | `002-advanced-shapes` | ✅ Done |
-| 2 — Variation | `003-variation` | ✅ Done |
-| 3 — Masks | `004-shape-masks` | ⬜ Planned |
-| 3.5–3.7 — Opacity/Color/Gradients | `005–007` | ✅ Done |
-| 4 — Bézier + Shape Merger | `008–009` |✅ Done |
+| Stage                             | Branch                 | Status     |
+| --------------------------------- | ---------------------- | ---------- |
+| 1 — Primitives                    | `001-foster-ts-shapes` | ✅ Done    |
+| 1.5 — Advanced Shapes             | `002-advanced-shapes`  | ✅ Done    |
+| 2 — Variation                     | `003-variation`        | ✅ Done    |
+| 3 — Masks                         | `004-shape-masks`      | ✅ Done    |
+| 3.5–3.7 — Opacity/Color/Gradients | `005–007`              | ✅ Done    |
+| 4 — Bézier + Shape Merger         | `008–009`              | ✅ Done    |
 
 ## Source Structure
 
@@ -54,17 +54,17 @@ tests/
 
 ## Shape Type Summary (Stage 1 + 1.5)
 
-| Type | Key Params | Semantic | Path |
-|------|-----------|----------|------|
-| square | size | `<rect>` | `<path>` |
-| rectangle | width, height | `<rect>` | `<path>` |
-| circle | size (diameter) | `<circle>` | `<path>` (two arcs) |
-| triangle | size | `<polygon>` | `<path>` |
-| trapezoid | topWidth, bottomWidth, height | `<polygon>` | `<path>` |
-| octagon | size (circumradius) | `<polygon>` | `<path>` |
-| polygon | sides (≥3), size (circumradius) | `<polygon>` | `<path>` |
-| oval | width, height (full extents) | `<ellipse>` | `<path>` (two arcs) |
-| blob | size, points? (default 6) | `<path>` always | `<path>` always |
+| Type      | Key Params                      | Semantic        | Path                |
+| --------- | ------------------------------- | --------------- | ------------------- |
+| square    | size                            | `<rect>`        | `<path>`            |
+| rectangle | width, height                   | `<rect>`        | `<path>`            |
+| circle    | size (diameter)                 | `<circle>`      | `<path>` (two arcs) |
+| triangle  | size                            | `<polygon>`     | `<path>`            |
+| trapezoid | topWidth, bottomWidth, height   | `<polygon>`     | `<path>`            |
+| octagon   | size (circumradius)             | `<polygon>`     | `<path>`            |
+| polygon   | sides (≥3), size (circumradius) | `<polygon>`     | `<path>`            |
+| oval      | width, height (full extents)    | `<ellipse>`     | `<path>` (two arcs) |
+| blob      | size, points? (default 6)       | `<path>` always | `<path>` always     |
 
 ## speckit Workflow Notes
 
@@ -77,6 +77,6 @@ tests/
 ## Test Count History
 
 | After Stage | Tests |
-|-------------|-------|
-| Stage 1 | 112 |
-| Stage 1.5 | 229 |
+| ----------- | ----- |
+| Stage 1     | 112   |
+| Stage 1.5   | 229   |
