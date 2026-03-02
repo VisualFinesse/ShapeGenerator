@@ -2,7 +2,7 @@
 
 > Deterministic SVG shape generation — zero dependencies, fully typed, endlessly composable.
 
-Built by a developer who understands that the best infrastructure is the kind you never have to think about twice. `foster-ts-shapes` is a precision-engineered primitive: drop in a seed and a shape list, get back a pixel-perfect SVG every time. No canvas, no DOM, no runtime deps — just TypeScript and math.
+Drop in a seed and a shape list, get back a pixel-perfect SVG every time. No canvas, no DOM, no runtime deps — just TypeScript and math.
 
 ---
 
@@ -22,9 +22,7 @@ import { generate } from "foster-ts-shapes";
 const result = generate({
   seed: 42,
   canvas: { width: 400, height: 400 },
-  shapes: [
-    { type: "circle", x: 200, y: 200, size: 100, fill: "steelblue" },
-  ],
+  shapes: [{ type: "circle", x: 200, y: 200, size: 100, fill: "steelblue" }],
 });
 
 console.log(result.svg); // <svg ...>...</svg>
@@ -34,21 +32,29 @@ Same seed → same SVG. Every time. On any machine.
 
 ---
 
+## Examples
+
+![AnimatedShapes](./AnimatedShapes.gif) ![AnimatedShapes2](./AnimatedShapes2.gif)
+
+> **Note:** These animations are external visualizations created to showcase the PRNG-driven variation system — cycling through different seeds to demonstrate deterministic shape generation. `foster-ts-shapes` outputs static SVG strings only. It does not animate shapes or produce GIFs.
+
+---
+
 ## Shapes
 
-Nine shape types, all sharing a common base interface:
+Nine primitives, all sharing a common base interface:
 
-| Type | Required fields |
-|------|----------------|
-| `square` | `x, y, size` |
-| `rectangle` | `x, y, width, height` |
-| `circle` | `x, y, size` |
-| `triangle` | `x, y, size` |
+| Type        | Required fields                       |
+| ----------- | ------------------------------------- |
+| `square`    | `x, y, size`                          |
+| `rectangle` | `x, y, width, height`                 |
+| `circle`    | `x, y, size`                          |
+| `triangle`  | `x, y, size`                          |
 | `trapezoid` | `x, y, topWidth, bottomWidth, height` |
-| `octagon` | `x, y, size` |
-| `polygon` | `x, y, sides, size` |
-| `oval` | `x, y, width, height` |
-| `blob` | `x, y, size, points?` |
+| `octagon`   | `x, y, size`                          |
+| `polygon`   | `x, y, sides, size`                   |
+| `oval`      | `x, y, width, height`                 |
+| `blob`      | `x, y, size, points?`                 |
 
 Every shape also accepts `rotation?` (degrees).
 
@@ -124,9 +130,24 @@ Control z-order with `layer` — lower values render behind higher ones:
 
 ```ts
 shapes: [
-  { type: "circle",    x: 200, y: 200, size: 150, fill: "cornflowerblue", layer: 0 },
-  { type: "oval",      x: 200, y: 200, width: 80, height: 40, fill: "white", layer: 1 },
-]
+  {
+    type: "circle",
+    x: 200,
+    y: 200,
+    size: 150,
+    fill: "cornflowerblue",
+    layer: 0,
+  },
+  {
+    type: "oval",
+    x: 200,
+    y: 200,
+    width: 80,
+    height: 40,
+    fill: "white",
+    layer: 1,
+  },
+];
 ```
 
 ### Masks
@@ -173,7 +194,7 @@ Clip any shape using one or more mask shapes. Masks accept the full variation an
 
 ```ts
 interface GeneratorInput {
-  seed: number;               // any integer — determines all randomness
+  seed: number; // any integer — determines all randomness
   canvas: { width: number; height: number };
   shapes: Shape[];
   outputMode?: "semantic" | "path"; // default: "semantic"
@@ -202,6 +223,16 @@ Full strict-mode types are included. No `@types/` package needed.
 
 ```ts
 import type { GeneratorInput, Shape, GeneratorOutput } from "foster-ts-shapes";
+```
+
+```
+
+███████╗ ██████╗ ███████╗████████╗███████╗██████╗
+██╔════╝██╔═══██╗██╔════╝╚══██╔══╝██╔════╝██╔══██╗
+█████╗  ██║   ██║███████╗   ██║   █████╗  ██████╔╝
+██╔══╝  ██║   ██║╚════██║   ██║   ██╔══╝  ██╔══██╗
+██║     ╚██████╔╝███████║   ██║   ███████╗██║  ██║
+╚═╝      ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
 ```
 
 ---
