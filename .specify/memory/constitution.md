@@ -1,4 +1,4 @@
-# ShapeBuilder Constitution
+# ShapeGenerator Constitution
 
 Spec Constitution · TaskFlow Constitution
 

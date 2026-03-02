@@ -1,23 +1,23 @@
-# ShapeBuilder Memory
+# ShapeGenerator Memory
 
 ## Project Overview
 
 Pure TypeScript SVG shape engine. Single `generate()` entry point. Zero runtime dependencies. Deterministic output.
 
-**Repo**: `C:/Users/foster/Documents/devProjects/2026/ShapeBuilder`
+**Repo**: `C:/Users/foster/Documents/devProjects/2026/ShapeGenerator`
 **Tech**: TypeScript 5.4 strict, Vitest 1.x
 **Commands**: `npm test`, `npm run lint` (tsc --noEmit)
 
 ## Stage Status
 
-| Stage                             | Branch                 | Status     |
-| --------------------------------- | ---------------------- | ---------- |
-| 1 — Primitives                    | `001-foster-ts-shapes` | ✅ Done    |
-| 1.5 — Advanced Shapes             | `002-advanced-shapes`  | ✅ Done    |
-| 2 — Variation                     | `003-variation`        | ✅ Done    |
-| 3 — Masks                         | `004-shape-masks`      | ✅ Done    |
-| 3.5–3.7 — Opacity/Color/Gradients | `005–007`              | ✅ Done    |
-| 4 — Bézier + Shape Merger         | `008–009`              | ✅ Done    |
+| Stage                             | Branch                 | Status  |
+| --------------------------------- | ---------------------- | ------- |
+| 1 — Primitives                    | `001-foster-ts-shapes` | ✅ Done |
+| 1.5 — Advanced Shapes             | `002-advanced-shapes`  | ✅ Done |
+| 2 — Variation                     | `003-variation`        | ✅ Done |
+| 3 — Masks                         | `004-shape-masks`      | ✅ Done |
+| 3.5–3.7 — Opacity/Color/Gradients | `005–007`              | ✅ Done |
+| 4 — Bézier + Shape Merger         | `008–009`              | ✅ Done |
 
 ## Source Structure
 
