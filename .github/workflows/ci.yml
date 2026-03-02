@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - 001-svg-shape-engine
+      - 001-foster-ts-shapes
   pull_request:
     branches:
       - main
-      - 001-svg-shape-engine
+      - 001-foster-ts-shapes
 
 jobs:
   build-and-test:

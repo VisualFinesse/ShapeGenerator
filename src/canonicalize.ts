@@ -2,6 +2,7 @@ import type {
   GeneratorInput,
   Canvas,
   Shape,
+  MaskShape,
   SquareShape,
   RectangleShape,
   CircleShape,
@@ -20,7 +21,18 @@ function canonicalizeCanvas(canvas: Canvas): Canvas {
   };
 }
 
-function canonicalizeShape(shape: Shape): Shape {
+// isMaskShape = true when canonicalizing a shape inside a <mask> element:
+//   mask and layer fields on nested shapes are silently dropped (no nesting).
+function canonicalizeShape(shape: Shape, isMaskShape = false): Shape {
+  // Canonicalize mask shapes (only for top-level shapes; mask nesting not supported)
+  const canonicalMask: MaskShape[] = [];
+  if (!isMaskShape && shape.mask !== undefined) {
+    const rawArr = Array.isArray(shape.mask) ? shape.mask : [shape.mask];
+    for (const ms of rawArr) {
+      canonicalMask.push(canonicalizeShape(ms, true));
+    }
+  }
+
   const base = {
     x: shape.x,
     y: shape.y,
@@ -36,6 +48,8 @@ function canonicalizeShape(shape: Shape): Shape {
     ...(shape.strokeGradient !== undefined  ? { strokeGradient: shape.strokeGradient } : {}),
     ...(shape.bezier !== undefined          ? { bezier: shape.bezier } : {}),
     ...(shape.bezierDirection !== undefined ? { bezierDirection: shape.bezierDirection } : {}),
+    ...(!isMaskShape && shape.layer !== undefined ? { layer: shape.layer } : {}),
+    ...(canonicalMask.length > 0            ? { mask: canonicalMask } : {}),
   };
 
   switch (shape.type) {
@@ -124,7 +138,7 @@ export function canonicalize(input: GeneratorInput): GeneratorInput {
   const result: GeneratorInput = {
     seed: input.seed,
     canvas: canonicalizeCanvas(input.canvas),
-    shapes: input.shapes.map(canonicalizeShape),
+    shapes: input.shapes.map((s) => canonicalizeShape(s)),
     ...(input.outputMode !== undefined ? { outputMode: input.outputMode } : {}),
   };
   return result;

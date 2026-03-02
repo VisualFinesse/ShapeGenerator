@@ -1,4 +1,35 @@
-.claude
-specs
-*.md
-tests
+# Development tooling
+.claude/
+.specify/
+.github/
+.gitignore
+.gitattributes
+
+# Documentation (internal)
+CLAUDE.md
+ROADMAP.md
+specs/
+memory/
+
+# Testing
+tests/
+vitest.config.ts
+
+# Examples & scratch
+Example/
+Test/
+scratch/
+
+# Build artifacts (don't include source TS when shipping compiled dist)
+src/
+tsconfig.json
+
+# Runtime junk
+node_modules/
+*.tsbuildinfo
+*.log
+coverage/
+
+# OS / editor
+.DS_Store
+Thumbs.db

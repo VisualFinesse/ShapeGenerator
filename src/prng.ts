@@ -15,6 +15,16 @@ export function varSeed(generatorSeed: number, index: number): number {
 }
 
 /**
+ * Derive a deterministic seed for a mask shape's PRNG.
+ * Uses different prime constants from blobSeed and varSeed to guarantee independence.
+ * parentIdx is the original (pre-sort) index of the masked shape; maskIdx is the
+ * position of this mask shape within the mask array.
+ */
+export function maskSeed(genSeed: number, parentIdx: number, maskIdx: number): number {
+  return (Math.imul(genSeed | 0, 1000039) + Math.imul(parentIdx, 65537) + maskIdx) | 0;
+}
+
+/**
  * Create a mulberry32 PRNG function seeded with the given value.
  * Each call to the returned function advances state and returns a float in [0, 1).
  */

@@ -1,6 +1,6 @@
 # Feature Specification: SVG Shape Engine v0.1
 
-**Feature Branch**: `001-svg-shape-engine`
+**Feature Branch**: `001-foster-ts-shapes`
 **Created**: 2026-02-28
 **Status**: Draft
 **Input**: User description: "Specify v0.1 of a pure TypeScript core library that generates deterministic SVG strings for designer-intent primitive shapes."
@@ -64,7 +64,6 @@ Invalid numeric values, missing required fields, or incorrect per-type parameter
 - **FR-011**: The engine MUST reject `NaN`, `Infinity`, or `-Infinity`.
 - **FR-012**: explicitly allow <rect>, <circle>, <polygon> and <path>; default is semantic.
 - outputMode?: "semantic" | "path" (optional, default "semantic").
-
 
   - `<svg>` root
   - primitive shape elements

@@ -1,6 +1,6 @@
 # API Contract: Advanced Shapes v0.2
 
-> This document extends the Stage 1 API contract (`specs/001-svg-shape-engine/contracts/api.md`). The public function signature, output contract, error contract, and SVG shared rules are **unchanged**. Only the input contract is extended with new shape variants.
+> This document extends the Stage 1 API contract (`specs/001-foster-ts-shapes/contracts/api.md`). The public function signature, output contract, error contract, and SVG shared rules are **unchanged**. Only the input contract is extended with new shape variants.
 
 ---
 
@@ -31,32 +31,68 @@ generate(input: GeneratorInput): GeneratorOutput
 ```typescript
 type Shape =
   // ── Stage 1 ──────────────────────────────────────────────────────
-  | { type: "square";    x: number; y: number; size: number;   rotation?: number }
-  | { type: "rectangle"; x: number; y: number; width: number; height: number; rotation?: number }
-  | { type: "circle";    x: number; y: number; size: number;   rotation?: number }
-  | { type: "triangle";  x: number; y: number; size: number;   rotation?: number }
+  | { type: "square"; x: number; y: number; size: number; rotation?: number }
+  | {
+      type: "rectangle";
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      rotation?: number;
+    }
+  | { type: "circle"; x: number; y: number; size: number; rotation?: number }
+  | { type: "triangle"; x: number; y: number; size: number; rotation?: number }
   // ── Stage 1.5 ────────────────────────────────────────────────────
-  | { type: "trapezoid"; x: number; y: number; topWidth: number; bottomWidth: number; height: number; rotation?: number }
-  | { type: "octagon";   x: number; y: number; size: number;   rotation?: number }
-  | { type: "polygon";   x: number; y: number; sides: number;  size: number;  rotation?: number }
-  | { type: "oval";      x: number; y: number; width: number;  height: number; rotation?: number }
-  | { type: "blob";      x: number; y: number; size: number;   points?: number; rotation?: number }
+  | {
+      type: "trapezoid";
+      x: number;
+      y: number;
+      topWidth: number;
+      bottomWidth: number;
+      height: number;
+      rotation?: number;
+    }
+  | { type: "octagon"; x: number; y: number; size: number; rotation?: number }
+  | {
+      type: "polygon";
+      x: number;
+      y: number;
+      sides: number;
+      size: number;
+      rotation?: number;
+    }
+  | {
+      type: "oval";
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      rotation?: number;
+    }
+  | {
+      type: "blob";
+      x: number;
+      y: number;
+      size: number;
+      points?: number;
+      rotation?: number;
+    };
 ```
 
 ### Field Constraints (new types)
 
-| Type       | Field       | Constraint |
-|------------|-------------|------------|
-| trapezoid  | topWidth    | > 0, finite, not NaN |
-| trapezoid  | bottomWidth | > 0, finite, not NaN |
-| trapezoid  | height      | > 0, finite, not NaN |
-| octagon    | size        | > 0, finite, not NaN (circumradius) |
-| polygon    | sides       | Integer ≥ 3, finite, not NaN |
-| polygon    | size        | > 0, finite, not NaN (circumradius) |
-| oval       | width       | > 0, finite, not NaN (full extent) |
-| oval       | height      | > 0, finite, not NaN (full extent) |
-| blob       | size        | > 0, finite, not NaN (nominal bounding radius) |
-| blob       | points      | Integer ≥ 3, default 6 (optional) |
+| Type      | Field       | Constraint                                     |
+| --------- | ----------- | ---------------------------------------------- |
+| trapezoid | topWidth    | > 0, finite, not NaN                           |
+| trapezoid | bottomWidth | > 0, finite, not NaN                           |
+| trapezoid | height      | > 0, finite, not NaN                           |
+| octagon   | size        | > 0, finite, not NaN (circumradius)            |
+| polygon   | sides       | Integer ≥ 3, finite, not NaN                   |
+| polygon   | size        | > 0, finite, not NaN (circumradius)            |
+| oval      | width       | > 0, finite, not NaN (full extent)             |
+| oval      | height      | > 0, finite, not NaN (full extent)             |
+| blob      | size        | > 0, finite, not NaN (nominal bounding radius) |
+| blob      | points      | Integer ≥ 3, default 6 (optional)              |
 
 Unknown fields at any level are silently dropped.
 
@@ -78,10 +114,12 @@ Unknown fields at any level are silently dropped.
 ## Error Contract (unchanged in structure, extended in messages)
 
 On invalid input, `generate()` throws an `Error` with a message identifying:
+
 - The field path (e.g., `shapes[2].sides`)
 - The specific issue (e.g., `must be an integer >= 3`, `missing required field`, `NaN`)
 
 New error examples:
+
 - `shapes[0].sides: must be an integer >= 3` (polygon with sides < 3)
 - `shapes[1].points: must be an integer >= 3` (blob with points < 3)
 - `shapes[2].topWidth: missing required field` (trapezoid)
@@ -172,6 +210,7 @@ When `outputMode: "path"`, every shape renders as `<path>` **except blob** (whic
 ## Determinism Guarantee (unchanged)
 
 For any valid input `I`:
+
 ```
 generate(I).svg === generate(I).svg  // always true, byte-for-byte
 ```

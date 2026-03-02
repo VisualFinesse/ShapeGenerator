@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <defs>
+    <mask id="mask-s20-rectangle-0" maskUnits="userSpaceOnUse">
+    <polygon points="150,98.038476 105,175.980762 195,175.980762" fill="white"/>
+    </mask>
+  </defs>
+  <rect id="s20-rectangle-0" x="10" y="50" width="140" height="100" fill="tomato" mask="url(#mask-s20-rectangle-0)"/>
+</svg>

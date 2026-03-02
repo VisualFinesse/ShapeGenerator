@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <defs>
+    <mask id="mask-s60-circle-0" maskUnits="userSpaceOnUse">
+    <polygon points="200,90 295.262794,145 295.262794,255 200,310 104.737206,255 104.737206,145" fill="white"/>
+    </mask>
+  </defs>
+  <circle id="s60-circle-0" cx="200" cy="200" r="75" fill="cornflowerblue" mask="url(#mask-s60-circle-0)"/>
+  <ellipse id="s60-oval-1" cx="200" cy="200" rx="40" ry="20" fill="white"/>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <circle id="s99-circle-0" cx="115" cy="150" r="40" fill="tomato"/>
+  <circle id="s99-circle-1" cx="185" cy="150" r="40" fill="tomato"/>
+  <polygon id="s99-triangle-2" points="150,113.39746 75,243.30127 225,243.30127" fill="tomato" transform="rotate(180, 150, 200)"/>
+</svg>

@@ -1,6 +1,6 @@
 # Research: SVG Shape Engine v0.1
 
-**Branch**: `001-svg-shape-engine` | **Date**: 2026-02-28
+**Branch**: `001-foster-ts-shapes` | **Date**: 2026-02-28
 
 ## R1: Circle-as-Path Representation
 
@@ -17,6 +17,7 @@ clarification: "Path mode uses two-arc circle (no Bézier approximation)."
 In `"semantic"` mode the native `<circle>` element is used directly.
 
 **Alternatives considered**:
+
 - Four cubic Bézier curves (kappa ≈ 0.5522): Approximate only (~0.027%
   radial error). Rejected in favour of exact arc representation.
 - Single 360° arc: Degenerate in SVG — produces no output.
@@ -35,6 +36,7 @@ precision ensures byte-for-byte determinism. Six decimal places provide
 sub-micrometer precision at any practical SVG viewport size.
 
 **Alternatives considered**:
+
 - No rounding: Risks platform-dependent float formatting.
 - Fewer decimals (2-3): Could cause visible rounding at large scales.
 - `toPrecision`: Less predictable output length.
@@ -52,6 +54,7 @@ would be invalid as it doesn't match `NameStartChar`, so we substitute
 `n` for "negative".
 
 **Alternatives considered**:
+
 - Hash-based IDs (e.g., `sha256(seed+type+index)`): Opaque, harder to
   debug, doesn't encode type readably.
 - Underscore prefix (`_42_square_0`): Valid but less readable.
@@ -66,6 +69,7 @@ API, zero-config for TypeScript projects. Widely adopted in the
 TypeScript ecosystem.
 
 **Alternatives considered**:
+
 - Jest: Requires ts-jest or SWC transformer configuration.
 - Node test runner: Minimal ecosystem tooling, no snapshot support.
 - Mocha/Chai: More configuration, less TypeScript-native.
@@ -79,12 +83,14 @@ the center point for equilateral triangles. The centroid is located at
 **Rationale**: The centroid is the natural "center" for rotation and
 positioning. It ensures the triangle is balanced around `(x, y)`.
 For an equilateral triangle with side length `s`:
+
 - Height `h = s * sqrt(3) / 2`
 - Top vertex: `(x, y - 2h/3)`
 - Bottom-left: `(x - s/2, y + h/3)`
 - Bottom-right: `(x + s/2, y + h/3)`
 
 **Alternatives considered**:
+
 - Incenter: Coincides with centroid for equilateral triangles, so no
   difference.
 - Bounding-box center: Would offset the triangle visually since
