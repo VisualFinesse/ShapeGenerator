@@ -50,6 +50,9 @@ function canonicalizeShape(shape: Shape, isMaskShape = false): Shape {
     ...(shape.bezierDirection !== undefined ? { bezierDirection: shape.bezierDirection } : {}),
     ...(!isMaskShape && shape.layer !== undefined ? { layer: shape.layer } : {}),
     ...(canonicalMask.length > 0            ? { mask: canonicalMask } : {}),
+    // extraAttrs must survive canonicalization: generate() reads it off the
+    // canonical shape to emit data-* attributes for downstream animation.
+    ...(shape.extraAttrs !== undefined      ? { extraAttrs: shape.extraAttrs } : {}),
   };
 
   switch (shape.type) {
