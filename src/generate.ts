@@ -70,18 +70,22 @@ export function generate(input: GeneratorInput): GeneratorOutput {
       }
     }
 
-    // Compute shape ID (needed for gradient IDs)
-    const id = shapeId(canonical.seed, shape.type, i);
+    // Compute shape ID (needed for gradient and mask IDs, which derive from it —
+    // so idPrefix namespaces all of them through this one call)
+    const id = shapeId(canonical.seed, shape.type, i, canonical.idPrefix);
 
     // Gradient defs accumulation
+    // Derived ids are suffixed rather than prefixed so that every id in the
+    // document begins with the shape id — and therefore with idPrefix when one
+    // is set. That makes the namespace guarantee absolute and greppable.
     let fillGradId: string | undefined;
     if (shape.fillGradient) {
-      fillGradId = `grad-${id}-fill`;
+      fillGradId = `${id}-grad-fill`;
       defs.push(buildGradientDef(fillGradId, shape.fillGradient));
     }
     let strokeGradId: string | undefined;
     if (shape.strokeGradient) {
-      strokeGradId = `grad-${id}-stroke`;
+      strokeGradId = `${id}-grad-stroke`;
       defs.push(buildGradientDef(strokeGradId, shape.strokeGradient));
     }
 
@@ -92,7 +96,7 @@ export function generate(input: GeneratorInput): GeneratorOutput {
     if (shape.mask !== undefined) {
       const maskShapes = Array.isArray(shape.mask) ? shape.mask : [shape.mask];
       if (maskShapes.length > 0) {
-        const maskId = `mask-${id}`;
+        const maskId = `${id}-mask`;
         defs.push(buildMaskDef(maskId, maskShapes, mode, canonical.seed, i, defs));
         attrs["mask"] = `url(#${maskId})`;
       }

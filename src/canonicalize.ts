@@ -143,6 +143,7 @@ export function canonicalize(input: GeneratorInput): GeneratorInput {
     canvas: canonicalizeCanvas(input.canvas),
     shapes: input.shapes.map((s) => canonicalizeShape(s)),
     ...(input.outputMode !== undefined ? { outputMode: input.outputMode } : {}),
+    ...(input.idPrefix !== undefined ? { idPrefix: input.idPrefix } : {}),
   };
   return result;
 }

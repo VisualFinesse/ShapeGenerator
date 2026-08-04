@@ -1,4 +1,5 @@
 import type { GeneratorInput, Shape } from "./types.js";
+import { ID_PREFIX_PATTERN } from "./id.js";
 
 const SUPPORTED_TYPES = [
   "square", "rectangle", "circle", "triangle",
@@ -275,6 +276,15 @@ export function validate(input: GeneratorInput): void {
   }
   if (input.canvas.height <= 0) {
     throw new Error(`canvas.height must be > 0, got ${input.canvas.height}`);
+  }
+
+  // idPrefix must produce a valid XML id when concatenated into element ids
+  if (input.idPrefix !== undefined) {
+    if (typeof input.idPrefix !== "string" || !ID_PREFIX_PATTERN.test(input.idPrefix)) {
+      throw new Error(
+        `idPrefix must start with a letter and contain only letters, digits, '-', '_' or '.', got ${JSON.stringify(input.idPrefix)}`
+      );
+    }
   }
 
   // shapes validation

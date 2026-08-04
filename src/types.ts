@@ -67,6 +67,19 @@ export interface GeneratorInput {
   canvas: Canvas;
   shapes: Shape[];
   outputMode?: "semantic" | "path";
+  /**
+   * Namespace for every id this call emits — shape ids, gradient ids, mask ids.
+   *
+   * Ids are otherwise derived from (seed, type, index), which is unique within a
+   * single generated SVG but *not* across several. Callers that compose multiple
+   * generator outputs into one document (a composition/designer layer, a gallery
+   * page) must pass a distinct prefix per output, or `url(#…)` references will
+   * resolve to whichever definition appears first in the document.
+   *
+   * Must start with a letter and contain only letters, digits, `-`, `_` or `.`
+   * so the result is a valid XML id. Emitted as `${idPrefix}-${seed}-…`.
+   */
+  idPrefix?: string;
 }
 
 export interface Canvas {

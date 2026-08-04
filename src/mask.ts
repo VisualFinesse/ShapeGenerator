@@ -81,12 +81,12 @@ export function buildMaskDef(
     // in one document, where only the first definition takes effect.
     let fillGradId: string | undefined;
     if (ms.fillGradient) {
-      fillGradId = `grad-${maskId}-${mi}-fill`;
+      fillGradId = `${maskId}-${mi}-grad-fill`;
       gradientDefs.push(buildGradientDef(fillGradId, ms.fillGradient));
     }
     let strokeGradId: string | undefined;
     if (ms.strokeGradient) {
-      strokeGradId = `grad-${maskId}-${mi}-stroke`;
+      strokeGradId = `${maskId}-${mi}-grad-stroke`;
       gradientDefs.push(buildGradientDef(strokeGradId, ms.strokeGradient));
     }
 
