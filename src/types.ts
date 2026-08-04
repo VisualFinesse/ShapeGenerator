@@ -79,6 +79,8 @@ export interface ShapeBase extends VariationFields, StylingFields, BezierFields,
   x: number;
   y: number;
   rotation?: number;
+  /** Extra HTML/SVG attributes emitted verbatim on the rendered element (e.g. data-* attributes). */
+  extraAttrs?: Record<string, string>;
 }
 
 // Stage 1 shapes
@@ -160,4 +162,5 @@ export interface ShapeElement {
   rotation?: number;
   cx: number;
   cy: number;
+  extraAttrs?: Record<string, string>;
 }

@@ -98,7 +98,7 @@ export function generate(input: GeneratorInput): GeneratorOutput {
       }
     }
 
-    return { tag, attrs, id, rotation: shape.rotation, cx: shape.x, cy: shape.y };
+    return { tag, attrs, id, rotation: shape.rotation, cx: shape.x, cy: shape.y, extraAttrs: shape.extraAttrs };
   });
   return { svg: assembleSvg(canonical.canvas, elements, defs), metadata: { shapeCount: canonical.shapes.length } };
 }

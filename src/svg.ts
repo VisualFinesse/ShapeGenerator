@@ -4,6 +4,11 @@ export function assembleSvg(canvas: Canvas, elements: ShapeElement[], defs?: str
   const children = elements.map((el) => {
     const attrs: string[] = [];
     attrs.push(`id="${el.id}"`);
+    if (el.extraAttrs) {
+      for (const [k, v] of Object.entries(el.extraAttrs)) {
+        attrs.push(`${k}="${v}"`);
+      }
+    }
     for (const [k, v] of Object.entries(el.attrs)) {
       attrs.push(`${k}="${v}"`);
     }

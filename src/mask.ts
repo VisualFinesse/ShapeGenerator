@@ -2,7 +2,6 @@ import type { MaskShape, Shape } from "./types.js";
 import { createPrng, maskSeed } from "./prng.js";
 import { applySizeVariance, renderVaried, extractVertices, verticesToPath } from "./variation.js";
 import { buildGradientDef, buildStylingAttrs } from "./styling.js";
-import { shapeId } from "./id.js";
 import { renderSquare } from "./shapes/square.js";
 import { renderRectangle } from "./shapes/rectangle.js";
 import { renderCircle } from "./shapes/circle.js";
@@ -74,16 +73,20 @@ export function buildMaskDef(
       }
     }
 
-    // Accumulate gradient defs for this mask shape (if any)
-    const msId = shapeId(generatorSeed, ms.type, mi);
+    // Accumulate gradient defs for this mask shape (if any).
+    // The id is derived from maskId — which is already unique per masked shape —
+    // plus the mask-shape index. Deriving it from (seed, type, mi) alone was not
+    // unique: two different parent shapes each masked by, say, an oval at mask
+    // index 0 produced the same id and therefore duplicate <linearGradient> defs
+    // in one document, where only the first definition takes effect.
     let fillGradId: string | undefined;
     if (ms.fillGradient) {
-      fillGradId = `grad-${msId}-mask-fill`;
+      fillGradId = `grad-${maskId}-${mi}-fill`;
       gradientDefs.push(buildGradientDef(fillGradId, ms.fillGradient));
     }
     let strokeGradId: string | undefined;
     if (ms.strokeGradient) {
-      strokeGradId = `grad-${msId}-mask-stroke`;
+      strokeGradId = `grad-${maskId}-${mi}-stroke`;
       gradientDefs.push(buildGradientDef(strokeGradId, ms.strokeGradient));
     }
 
